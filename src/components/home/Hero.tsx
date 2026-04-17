@@ -3,13 +3,11 @@
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { useUIStore } from "@/stores/uiStore";
 
 // ─── Premium easing ──────────────────────────────────────
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero() {
-  const setCursor = useUIStore((s) => s.setCursor);
   const containerRef = useRef<HTMLElement>(null);
 
   // ─── Scroll-driven parallax values (AMPLIFIED) ─────────
@@ -24,14 +22,10 @@ export default function Hero() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothX = useSpring(mouseX, { stiffness: 150, damping: 30 });
-  const smoothY = useSpring(mouseY, { stiffness: 150, damping: 30 });
 
   const backTiltX = useTransform(smoothX, (v) => v * 0.3);
-  const backTiltY = useTransform(smoothY, (v) => v * 0.3);
   const modelTiltX = useTransform(smoothX, (v) => v * 0.6);
-  const modelTiltY = useTransform(smoothY, (v) => v * 0.6);
   const frontTiltX = useTransform(smoothX, (v) => v * 1.0);
-  const frontTiltY = useTransform(smoothY, (v) => v * 1.0);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const x = (e.clientX / window.innerWidth - 0.5) * 24;

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUIStore } from "@/stores/uiStore";
 
 // ─── Types ────────────────────────────────────────────────
 interface NavItem {
@@ -32,7 +31,6 @@ const MobileMenu = ({
   onClose: () => void;
   pathname: string;
 }) => {
-  const setCursor = useUIStore((s) => s.setCursor);
 
   return (
     <motion.div
@@ -145,7 +143,6 @@ const AccountIcon = () => (
 
 // ─── Navbar ───────────────────────────────────────────────
 export default function Navbar() {
-  const setCursor = useUIStore((s) => s.setCursor);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

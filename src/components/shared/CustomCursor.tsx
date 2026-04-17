@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useUIStore, type CursorVariant } from '@/stores/uiStore'
 
 export default function CustomCursor() {
@@ -68,7 +68,7 @@ export default function CustomCursor() {
       window.removeEventListener('mousemove', move)
       window.removeEventListener('resize', checkTouch)
     }
-  }, [mouseX, mouseY])
+  }, [mouseX, mouseY, setCursor])
 
   if (!isMounted || isTouchDevice) return null
 
