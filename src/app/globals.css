@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #0A0A0A;
+    --bg-secondary: #1A1A1A;
+    --accent-red: #8B0000;
+    --accent-red-hover: #A11212;
+    --text-primary: #F5F5F5;
+    --text-muted: #A6A6A6;
+    --accent-gold: #C9A24A;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    cursor: none !important;
+  }
+
+  html {
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "San Francisco", "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--accent-red);
+    color: var(--text-primary);
+  }
+
+  input, textarea, [contenteditable="true"] {
+    cursor: text;
+  }
+
+  button, a {
+    cursor: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
