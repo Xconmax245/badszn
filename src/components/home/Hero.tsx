@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import SectionDivider from "@/components/shared/SectionDivider";
 
 // ─── Premium easing ──────────────────────────────────────
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -231,6 +232,11 @@ export default function Hero() {
           background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)",
         }}
       />
+
+      {/* Seamless blend divider to next section */}
+      <div className="absolute bottom-[-1px] left-0 w-full z-20 pointer-events-none leading-[0]">
+        <SectionDivider variant="wave" fill="#000000" background="transparent" />
+      </div>
     </section>
   );
 }
