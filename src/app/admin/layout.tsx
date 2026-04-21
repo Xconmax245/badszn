@@ -2,6 +2,8 @@ import { Metadata } from "next"
 import AdminSidebar from "@/components/admin/Sidebar"
 import TopBar from "@/components/admin/TopBar"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin Dashboard | BAD SZN",
   description: "Brand command center.",
