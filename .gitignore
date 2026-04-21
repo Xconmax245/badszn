@@ -26,7 +26,18 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+.env.development
+
+# prisma
+/prisma/migrations/
+
+# scratch
+/scratch/
+
+# gemini
+.gemini/
 
 # vercel
 .vercel
@@ -34,3 +45,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

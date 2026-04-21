@@ -8,7 +8,7 @@ import SectionDivider from "@/components/shared/SectionDivider";
 // ─── Premium easing ──────────────────────────────────────
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-export default function Hero() {
+export default function Hero({ headline, subtitle }: { headline?: string | null, subtitle?: string | null }) {
   const containerRef = useRef<HTMLElement>(null);
 
   // ─── Scroll-driven parallax values (AMPLIFIED) ─────────
@@ -136,7 +136,7 @@ export default function Hero() {
         transition={{ duration: 1.1, ease: EASE, delay: 0.15 }}
       >
         <Image
-          src="/images/photo_5981053800535493916_y-removebg-preview.png"
+          src="/images/photo_5981053800535493916_y__1_-removebg-preview.png"
           alt="BAD SZN — Latest drop streetwear"
           fill
           priority
@@ -181,7 +181,7 @@ export default function Hero() {
           className="absolute bottom-12 md:bottom-16 left-0 w-full flex flex-col items-center gap-5 pointer-events-auto"
         >
           <p className="text-white/50 text-[10px] md:text-xs tracking-[0.25em] uppercase font-medium">
-            New Drop — Available Now
+            {subtitle || "New Drop — Available Now"}
           </p>
           <a
             href="/shop"

@@ -77,13 +77,18 @@ function ParallaxText({ children, baseVelocity = 2 }: { children: React.ReactNod
 }
 
 // ─── Main Component ───────────────────────────────────────
-export default function PresenceStrip() {
+export default function PresenceStrip({ narrative }: { narrative?: string | null }) {
+  // Use narrative if provided, otherwise fallback to defaults
+  const statements = narrative 
+    ? narrative.split(/[.;]|\n/).filter(s => s.trim().length > 3).map(s => s.trim())
+    : STATEMENTS;
+
   return (
     <section className="relative w-full bg-black py-16 md:py-24 overflow-hidden">
       {/* Dynamic Text Row Container */}
       <div className="w-full flex items-center justify-center border-y border-white/[0.08] py-8 md:py-10 bg-black/60 shadow-2xl skew-y-[-2deg] origin-center -mx-4 w-[110%] relative z-10">
         <ParallaxText baseVelocity={-1.5}>
-          {STATEMENTS.map((text, i) => {
+          {statements.map((text, i) => {
             // Alternate styles dynamically so all platforms experience the aesthetic without hover!
             const styleVariant = i % 3;
             // 0: Solid White

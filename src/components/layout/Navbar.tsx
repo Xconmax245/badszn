@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── Types ────────────────────────────────────────────────
 interface NavItem {
@@ -142,11 +143,42 @@ const AccountIcon = () => (
 );
 
 // ─── Navbar ───────────────────────────────────────────────
-export default function Navbar() {
+export default function Navbar({ announcement }: { announcement?: string | null }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  
+  // Auth state
+  const [user, setUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Sync auth state
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/signout", { method: "POST" });
+    setUser(null);
+    router.refresh();
+    router.push("/");
+  };
 
   // Close menu on route change
   useEffect(() => {
@@ -167,6 +199,14 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    const handleClick = () => setUserMenuOpen(false);
+    window.addEventListener("click", handleClick);
+    return () => window.removeEventListener("click", handleClick);
+  }, [userMenuOpen]);
 
   return (
     <>
@@ -290,25 +330,77 @@ export default function Navbar() {
               </button>
             </div>
 
-            <div
-              className="relative hidden md:flex"
-              onMouseEnter={() => setHoveredKey("account")}
-              onMouseLeave={() => setHoveredKey(null)}
-              data-cursor="hover"
-            >
-              <button
-                aria-label="Account"
-                className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full text-white/50 hover:text-white transition-all duration-300 hover:scale-110"
-              >
-                {hoveredKey === "account" && (
-                  <motion.div
-                    layoutId="nav-hover-pill"
-                    className="absolute inset-0 z-0 bg-white/[0.06] border border-white/[0.08] rounded-full"
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                  />
-                )}
-                <AccountIcon />
-              </button>
+            {/* ─── QUIET ENTRY AUTH ─── */}
+            <div className="relative ml-8 mr-2 hidden lg:block">
+              {user ? (
+                <div className="relative">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setUserMenuOpen(!userMenuOpen);
+                    }}
+                    className="text-[13px] font-medium text-white/70 hover:text-white transition-colors duration-150 flex items-center gap-2"
+                    data-cursor="hover"
+                  >
+                    {user.user_metadata?.first_name || "Account"}
+                    <motion.span
+                      animate={{ rotate: userMenuOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-[8px] opacity-30"
+                    >
+                      ▼
+                    </motion.span>
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute right-0 mt-4 w-48 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-1.5"
+                      >
+                        <div className="px-4 py-2 mb-1">
+                          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Identity</p>
+                          <p className="text-[11px] font-medium text-white/40 truncate">{user.email}</p>
+                        </div>
+                        
+                        {[
+                          { label: "Account", href: "/account" },
+                          { label: "Orders", href: "/account/orders" },
+                          { label: "Settings", href: "/account/settings" },
+                        ].map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="block w-full text-left px-4 py-2.5 text-[12px] font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                        
+                        <div className="h-[1px] bg-white/5 my-1.5 mx-2" />
+                        
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-2.5 text-[12px] font-medium text-red-500/70 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all"
+                        >
+                          Sign out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link 
+                  href="/login" 
+                  className="text-[13px] font-medium text-white/70 hover:text-white transition-colors duration-150"
+                  data-cursor="hover"
+                >
+                  Sign in
+                </Link>
+              )}
             </div>
 
             <div

@@ -50,4 +50,43 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* ⚡ Premium Minimal Scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 2px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* ── Aura Glassmorphism System ──────────────── */
+  .glass-aura {
+    background-color: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.8);
+  }
+
+  .glass-aura-hover:hover {
+    background-color: rgba(20, 20, 20, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 15px 50px -12px rgba(0, 0, 0, 0.9);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .text-aura-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
 }
