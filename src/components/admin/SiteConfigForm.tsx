@@ -256,7 +256,7 @@ export default function SiteConfigForm({ initialData }: SiteConfigFormProps) {
               value={formData.brandMessage}
               onChange={(e) => setFormData({ ...formData, brandMessage: e.target.value })}
               className="w-full bg-transparent border-b border-white/10 text-white py-4 text-sm font-medium focus:outline-none focus:border-white transition-all"
-              placeholder="Limited by design."
+              placeholder="BAD SZN — Built different. Worn louder."
             />
           </div>
 

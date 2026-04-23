@@ -8,8 +8,8 @@ export const revalidate = 60 // ISR — revalidate every 60s
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'SHOP / BAD SZN',
-    description: 'Archive collection of premium atmospheric streetwear. Authorized pieces only.',
+    title: 'SHOP / BAD SZN — Built different. Worn louder.',
+    description: 'Archive collection of premium atmospheric streetwear. BAD SZN — Built different. Worn louder.',
   }
 }
 export default async function ShopPageRoute() {

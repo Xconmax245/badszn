@@ -140,7 +140,7 @@ export default function Hero({ headline, subtitle }: { headline?: string | null,
       >
         <Image
           src="/images/photo_5981053800535493916_y__1_-removebg-preview.png"
-          alt="BAD SZN — Latest drop streetwear"
+          alt="BAD SZN — Built different. Worn louder."
           fill
           priority
           className="object-contain object-center drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)]"

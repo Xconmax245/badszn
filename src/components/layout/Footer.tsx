@@ -37,7 +37,7 @@ export default async function Footer() {
 
   return (
     <FooterClient
-      brandMessage={config?.brandMessage ?? "Limited by design."}
+      brandMessage={config?.brandMessage ?? "BAD SZN — Built different. Worn louder."}
       footerLinks={footerLinks}
       instagramUrl={config?.instagramUrl ?? ""}
       twitterUrl={config?.twitterUrl ?? ""}
