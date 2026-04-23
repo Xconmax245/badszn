@@ -8,9 +8,10 @@ import { User, ChevronDown, LogOut, Package, Heart, Settings } from 'lucide-reac
 import { useAuth } from '@/components/providers/SupabaseProvider'
 
 const MENU_ITEMS = [
-  { label: 'My Account', href: '/account', icon: Settings },
+  { label: 'Identity Profile', href: '/account/profile', icon: User },
   { label: 'My Orders',  href: '/account/orders', icon: Package },
   { label: 'Wishlist',   href: '/account/wishlist', icon: Heart },
+  { label: 'Settings',   href: '/account/settings', icon: Settings },
 ]
 
 export function UserMenu() {
