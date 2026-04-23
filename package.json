@@ -13,6 +13,7 @@
     "@prisma/client": "^6.19.3",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.3",
+    "@vercel/analytics": "^2.0.1",
     "aos": "^2.3.4",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

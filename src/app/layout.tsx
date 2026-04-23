@@ -32,6 +32,7 @@ import Footer from "@/components/layout/Footer";
 import CartDrawerWrapper from "@/components/cart/CartDrawerWrapper";
 import { Toaster } from "sonner"
 import VisitorTracker from "@/components/shared/VisitorTracker";
+import { Analytics } from "@vercel/analytics/next"
 
 export default async function RootLayout({
   children,
@@ -70,6 +71,7 @@ export default async function RootLayout({
             {showMaintenance && <MaintenanceBarrier />}
             <CartDrawerWrapper />
             {children}
+            <Analytics />
             <Toaster
               position="bottom-right"
               toastOptions={{
