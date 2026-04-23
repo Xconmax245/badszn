@@ -14,10 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 export default async function ShopPageRoute() {
   // Fetch data with defensive fallback
-  let initialProductsData = []
-  let total = 0
-  let settings = null
-  
+  let isError = false
   try {
     settings = await prisma.shopSettings.findUnique({ where: { id: 'singleton' } })
     
@@ -34,6 +31,19 @@ export default async function ShopPageRoute() {
     total = await prisma.product.count({ where: { status: 'ACTIVE' } })
   } catch (error) {
     console.error("CRITICAL: Shop data fetch failed due to connection timeout.", error)
+    isError = true
+  }
+
+  if (isError) {
+    return (
+      <main className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-8 text-center space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-black uppercase tracking-tighter text-white">System_Offline</h1>
+          <p className="text-[10px] font-medium text-white/20 uppercase tracking-[0.2em]">Database connection timeout. Synchronizing...</p>
+        </div>
+        <div className="w-12 h-[1px] bg-white/10 animate-pulse" />
+      </main>
+    )
   }
 
   if (!settings?.shopEnabled) {
