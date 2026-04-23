@@ -79,7 +79,7 @@ function EthosContent() {
     <div
       ref={containerRef}
       className="relative"
-      style={{ height: "150vh" }}
+      style={{ height: "115vh" }}
     >
       <div className="
         sticky top-0 w-full h-screen
@@ -94,7 +94,7 @@ function EthosContent() {
           viewport={{ once: true, margin: "-15%" }}
           transition={{ duration: 0.8, ease: EASE }}
           className="
-            block mb-8 md:mb-12
+            block mb-4 md:mb-6
             text-[10px] font-bold tracking-[0.35em] uppercase
             text-white/30
           "
@@ -138,7 +138,7 @@ function EthosContent() {
 
         {/* Animated underline */}
         <motion.div
-          className="h-[1px] bg-white/10 mt-10 md:mt-14"
+          className="h-[1px] bg-white/10 mt-6 md:mt-8"
           style={{ width: lineWidth }}
         />
 
@@ -148,7 +148,7 @@ function EthosContent() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
-          className="mt-8 md:mt-12 self-end relative z-10"
+          className="mt-6 md:mt-10 self-end relative z-10"
         >
           <Link
             href="/about"
