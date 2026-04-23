@@ -84,7 +84,7 @@ export default function PresenceStrip({ narrative }: { narrative?: string | null
     : STATEMENTS;
 
   return (
-    <section className="relative w-full bg-black py-10 md:py-16 overflow-hidden">
+    <section className="relative w-full bg-black py-16 md:py-24 overflow-hidden">
       {/* Dynamic Text Row Container */}
       <div className="w-full flex items-center justify-center border-y border-white/[0.08] py-8 md:py-10 bg-black/60 shadow-2xl skew-y-[-2deg] origin-center -mx-4 w-[110%] relative z-10">
         <ParallaxText baseVelocity={-1.5}>

@@ -79,7 +79,7 @@ function EthosContent() {
     <div
       ref={containerRef}
       className="relative"
-      style={{ height: "115vh" }}
+      style={{ height: "150vh" }}
     >
       <div className="
         sticky top-0 w-full h-screen
@@ -94,7 +94,7 @@ function EthosContent() {
           viewport={{ once: true, margin: "-15%" }}
           transition={{ duration: 0.8, ease: EASE }}
           className="
-            block mb-4 md:mb-6
+            block mb-8 md:mb-12
             text-[10px] font-bold tracking-[0.35em] uppercase
             text-white/30
           "

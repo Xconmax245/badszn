@@ -9,7 +9,7 @@ export default async function DropCarousel() {
   if (!collections.length) return null
 
   return (
-    <section className="relative w-full bg-black py-16 md:py-24 overflow-hidden">
+    <section className="relative w-full bg-black py-24 md:py-36 overflow-hidden">
       
       {/* Subtle grain texture — matching Hero */}
       <div
@@ -21,7 +21,7 @@ export default async function DropCarousel() {
       />
 
       {/* Editorial Header */}
-      <div className="px-6 md:px-12 lg:px-20 mb-12 md:mb-16 relative z-10">
+      <div className="px-6 md:px-12 lg:px-20 mb-16 md:mb-24 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-12">
           <div>
             <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-white/20 block mb-5">
@@ -46,14 +46,14 @@ export default async function DropCarousel() {
         </div>
 
         {/* Thin separator line */}
-        <div className="mt-8 md:mt-12 h-[1px] w-full bg-gradient-to-r from-white/[0.08] via-white/[0.04] to-transparent" />
+        <div className="mt-10 md:mt-14 h-[1px] w-full bg-gradient-to-r from-white/[0.08] via-white/[0.04] to-transparent" />
       </div>
 
       {/* Cinematic Client Carousel */}
       <DropCarouselClient collections={collections} />
 
       {/* Transition to next sector */}
-      <div className="mt-16 md:mt-24">
+      <div className="mt-24 md:mt-36">
         <SectionDivider variant="tear" fill="#000" />
       </div>
     </section>

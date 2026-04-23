@@ -159,7 +159,7 @@ export default function LookbookStrip({ entries }: LookbookStripProps) {
           ═══════════════════════════════════════════ */}
       <motion.div
         style={{ y: headerY }}
-        className="relative z-10 px-8 md:px-16 lg:px-24 pt-16 pb-12 md:pt-24 md:pb-16"
+        className="relative z-10 px-8 md:px-16 lg:px-24 pt-28 pb-16 md:pt-36 md:pb-20"
       >
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
@@ -363,7 +363,7 @@ export default function LookbookStrip({ entries }: LookbookStripProps) {
       {/* ═══════════════════════════════════════════
           LAYER 4 — Bottom: progress + CTA
           ═══════════════════════════════════════════ */}
-      <div className="relative z-10 px-8 md:px-16 lg:px-24 pt-10 pb-20 md:pb-28">
+      <div className="relative z-10 px-8 md:px-16 lg:px-24 pt-12 pb-28 md:pb-36">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           {/* Progress indicator */}
           <div className="flex items-center gap-4">
