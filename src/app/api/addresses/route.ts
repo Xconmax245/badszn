@@ -4,12 +4,12 @@ import { createServerClient } from "@/lib/supabase/server"
 
 export async function GET() {
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) return NextResponse.json({ addresses: [] })
+  if (!user) return NextResponse.json({ addresses: [] })
 
   const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: session.user.id },
+    where: { supabaseUid: user.id },
   })
 
   if (!customer) return NextResponse.json({ addresses: [] })
@@ -26,14 +26,14 @@ export async function POST(req: Request) {
   const body = await req.json()
 
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: session.user.id },
+    where: { supabaseUid: user.id },
   })
 
   if (!customer) {

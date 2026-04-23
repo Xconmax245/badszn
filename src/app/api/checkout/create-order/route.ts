@@ -5,22 +5,22 @@ import { createServerClient } from "@/lib/supabase/server"
 export async function POST(req: Request) {
   try {
     const supabase = createServerClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const { items, subtotal, total, shippingAddress } = await req.json()
     const orderNumber = `BS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
     const customer = await prisma.customer.findUnique({
-      where: { supabaseUid: session.user.id }
+      where: { supabaseUid: user.id }
     })
 
     const order = await prisma.order.create({
       data: {
         orderNumber,
         customerId: customer?.id,
-        guestEmail: session.user.email,
+        guestEmail: user.email,
         subtotal,
         total,
         status: "PENDING",
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     // ⚡ 2. Initialize Paystack
     const { initializePayment } = await import("@/lib/paystack")
     const paymentUrl = await initializePayment({
-      email: session.user.email!,
+      email: user.email!,
       amount: Math.round(total * 100), // convert to kobo
       reference: order.id,
       callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?ref=${order.id}`,

@@ -5,15 +5,15 @@ import { createServerClient } from "@/lib/supabase/server"
 export async function GET(req: Request) {
   // Try to get logged-in customer
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     // Guest — cart is in localStorage, nothing to fetch from DB
     return NextResponse.json({ items: [] })
   }
 
   const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: session.user.id },
+    where: { supabaseUid: user.id },
   })
 
   if (!customer) return NextResponse.json({ items: [] })
@@ -68,15 +68,15 @@ export async function POST(req: Request) {
   const { productId, variantId, quantity = 1 } = await req.json()
 
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     // Guest — handled client-side by Zustand + localStorage
     return NextResponse.json({ success: true, guest: true })
   }
 
   const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: session.user.id },
+    where: { supabaseUid: user.id },
   })
 
   if (!customer) {

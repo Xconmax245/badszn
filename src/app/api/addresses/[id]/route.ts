@@ -8,14 +8,14 @@ export async function PATCH(
 ) {
   const { id } = params
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: session.user.id },
+    where: { supabaseUid: user.id },
   })
 
   if (!customer) {
@@ -59,14 +59,14 @@ export async function DELETE(
 ) {
   const { id } = params
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: session.user.id },
+    where: { supabaseUid: user.id },
   })
 
   if (!customer) {

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation"
-import { createServerClient } from "@supabase/ssr"
-import { cookies } from "next/headers"
+import { getServerUser } from "@/lib/auth"
 
 /**
  * Account Dashboard / Profile Gateway
@@ -9,23 +8,10 @@ import { cookies } from "next/headers"
  * we'll either be here with a session or be redirected to /login.
  */
 export default async function AccountPage() {
-  const cookieStore = cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-      },
-    }
-  )
-
-  const { data: { session } } = await supabase.auth.getSession()
+  const user = await getServerUser()
 
   // This is a double-check backup to the middleware
-  if (!session) {
+  if (!user) {
     redirect("/auth")
   }
 
