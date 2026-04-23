@@ -59,6 +59,7 @@ model Customer {
   notifications   NotificationPreference?
   waitlistEntries WaitlistEntry[]
   savedAddresses  Address[]
+  wishlist        Wishlist[]
 
   @@map("customers")
 }
@@ -167,6 +168,7 @@ model Product {
   reviews          Review[]
   cartItems        CartItem[]
   lookbookProducts LookbookProduct[]
+  wishlist         Wishlist[]
 
   @@map("products")
 }
@@ -580,6 +582,23 @@ model LookbookProduct {
   product Product       @relation(fields: [productId], references: [id])
 
   @@map("lookbook_products")
+}
+
+// ─────────────────────────────────────────────
+// WISHLIST
+// ─────────────────────────────────────────────
+
+model Wishlist {
+  id         String   @id @default(cuid())
+  customerId String   @map("customer_id")
+  productId  String   @map("product_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, productId])
+  @@map("wishlists")
 }
 
 // ─────────────────────────────────────────────

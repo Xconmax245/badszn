@@ -154,7 +154,7 @@ export function UserMenu() {
               >
                 <LogOut size={16} className="opacity-60" />
                 <span className="text-[11px] font-bold uppercase tracking-widest">
-                  Terminate Session
+                  Sign Out
                 </span>
               </button>
             </div>

@@ -7,6 +7,8 @@ export async function getServerSession() {
 }
 
 export async function getServerUser() {
-  const session = await getServerSession()
-  return session?.user ?? null
+  const supabase = createServerClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) return null
+  return user
 }
