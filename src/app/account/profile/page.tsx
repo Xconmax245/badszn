@@ -1,30 +1,13 @@
-import { prisma } from "@/lib/prisma"
-import { getServerUser } from "@/lib/auth"
+import { getOrCreateCustomer } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { ProfileForm } from "@/components/account/ProfileForm"
 import { serializeData } from "@/lib/utils/serialize"
 
 export default async function ProfilePage() {
-  const user = await getServerUser()
-
-  if (!user) {
-    redirect("/auth")
-  }
-
-  const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: user.id }
-  })
+  const customer = await getOrCreateCustomer()
 
   if (!customer) {
-    // This should theoretically not happen if signup sync worked
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-black uppercase tracking-tighter">Identity Not Found</h1>
-          <p className="text-white/40 text-xs uppercase tracking-widest">Please contact support or try re-logging.</p>
-        </div>
-      </div>
-    )
+    redirect("/auth")
   }
 
   return (

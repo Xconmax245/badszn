@@ -1,4 +1,4 @@
-import { getServerUser } from "@/lib/auth"
+import { getOrCreateCustomer } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { serializeData } from "@/lib/utils/serialize"
@@ -6,29 +6,22 @@ import { ProductCard } from "@/components/shop/ProductCard"
 import { getSiteConfig } from "@/lib/actions/system"
 
 export default async function WishlistPage() {
-  const user = await getServerUser()
-  if (!user) redirect("/auth")
+  const customer = await getOrCreateCustomer()
+  if (!customer) redirect("/auth")
 
-  const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: user.id },
+  const wishlistItems = await prisma.wishlist.findMany({
+    where: { customerId: customer.id },
     include: {
-      wishlist: {
+      product: {
         include: {
-          product: {
-            include: {
-              images: { orderBy: { sortOrder: 'asc' } },
-              variants: true,
-              category: true
-            }
-          }
+          images: { orderBy: { sortOrder: 'asc' } },
+          variants: true,
+          category: true
         }
       }
     }
   })
 
-  if (!customer) redirect("/auth")
-
-  const wishlistItems = customer.wishlist
   const config = await getSiteConfig()
 
   return (

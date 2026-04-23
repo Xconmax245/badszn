@@ -1,27 +1,18 @@
-import { getServerUser } from "@/lib/auth"
+import { getOrCreateCustomer } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { serializeData } from "@/lib/utils/serialize"
 
 export default async function OrdersPage() {
-  const user = await getServerUser()
-  if (!user) redirect("/auth")
-
-  const customer = await prisma.customer.findUnique({
-    where: { supabaseUid: user.id },
-    include: {
-      orders: {
-        orderBy: { createdAt: 'desc' },
-        include: {
-          items: true
-        }
-      }
-    }
-  })
-
+  const customer = await getOrCreateCustomer()
   if (!customer) redirect("/auth")
 
-  const orders = customer.orders
+  const orders = await prisma.order.findMany({
+    where: { customerId: customer.id },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      items: true
+    }
+  })
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white pt-32 pb-20 px-6 md:px-12 lg:px-24">
