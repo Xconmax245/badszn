@@ -14,6 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 export default async function ShopPageRoute() {
   // Fetch data with defensive fallback
+  let settings: any = null
+  let initialProductsData: any[] = []
+  let total = 0
   let isError = false
   try {
     settings = await prisma.shopSettings.findUnique({ where: { id: 'singleton' } })
