@@ -1,28 +1,31 @@
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import Link from "next/link";
+import { prisma } from "@/lib/prisma"
+import { notFound } from "next/navigation"
 import { 
-  ArrowLeft, 
-  Package, 
+  ShoppingBag, 
+  User, 
   MapPin, 
   CreditCard, 
-  ShoppingBag,
+  Truck, 
+  Package, 
+  ArrowLeft,
   ExternalLink,
-  User,
-  Clock,
   CheckCircle2,
-  Truck
-} from "lucide-react";
-import { formatNaira } from "@/lib/utils/formatCurrency";
-import { OrderActionButtons } from "@/components/admin/OrderActionButtons";
-import Image from "next/image";
+  AlertCircle,
+  Clock
+} from "lucide-react"
+import Link from "next/link"
+import { formatNaira } from "@/lib/utils/formatCurrency"
+import { StatusUpdateAction } from "@/components/admin/StatusUpdateAction"
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
+export default async function OrderDetailPage({ 
+  params 
+}: { 
+  params: { id: string } 
+}) {
   const order = await prisma.order.findUnique({
     where: { id: params.id },
     include: {
       customer: true,
-      address: true,
       items: {
         include: {
           product: {
@@ -35,211 +38,255 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           }
         }
       }
-    },
-  });
-
-  if (!order) notFound();
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PENDING": return "bg-white/5 text-white/40 border-white/10";
-      case "PAID": return "bg-green-400/10 text-green-400 border-green-400/20";
-      case "SHIPPED": return "bg-blue-400/10 text-blue-400 border-blue-400/20";
-      case "DELIVERED": return "bg-purple-400/10 text-purple-400 border-purple-400/20";
-      default: return "bg-white/5 text-white/30 border-white/10";
     }
-  };
+  })
+
+  if (!order) notFound()
+
+  // Parse shipping address from JSON
+  let address: any = null
+  if (order.shippingAddress) {
+    try {
+      address = typeof order.shippingAddress === 'string' 
+        ? JSON.parse(order.shippingAddress) 
+        : order.shippingAddress
+    } catch (e) {
+      console.error("Failed to parse shipping address JSON", e)
+    }
+  }
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      {/* ─── HEADER ─────────────────────────────────────────── */}
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20">
+      {/* ─── HEADER ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
+        <div className="flex items-center gap-6">
           <Link 
-            href="/admin/orders" 
-            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors mb-6"
-            data-cursor="hover"
+            href="/admin/orders"
+            className="w-12 h-12 rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all group"
           >
-            <ArrowLeft className="w-3 h-3" /> Back to Logistics
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           </Link>
-          <div className="flex items-center gap-4">
-            <h1 className="text-4xl font-black uppercase tracking-tight text-white">Order #{order.orderNumber}</h1>
-            <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[2px] ${getStatusColor(order.status)}`}>
-              {order.status}
+          <div>
+            <div className="flex items-center gap-4 mb-2">
+              <h1 className="text-4xl font-black uppercase tracking-tight text-white">#{order.orderNumber}</h1>
+              <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                order.paymentStatus === 'PAID' ? 'text-emerald-500 border-emerald-500/20 bg-emerald-500/5' : 'text-amber-500 border-amber-500/20 bg-amber-500/5'
+              }`}>
+                {order.paymentStatus}
+              </span>
             </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 italic">
+              Registry_Entry: {order.id} · Logged {new Date(order.createdAt).toLocaleString()}
+            </p>
           </div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 mt-3 italic">
-            Received on {new Date(order.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'short' })}
-          </p>
         </div>
 
         <div className="flex items-center gap-4">
-           {/* Actions go here */}
+          <StatusUpdateAction orderId={order.id} currentStatus={order.status} />
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-12">
-        {/* ─── LEFT COLUMN: ITEMS ────────────────────────────── */}
-        <div className="col-span-12 xl:col-span-8 space-y-12">
-          <section className="bg-black border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
-            <div className="px-10 py-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
-              <div className="flex items-center gap-4">
-                <ShoppingBag className="w-4 h-4 text-white/20" />
-                <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40">Shipment Contents</h2>
-              </div>
-              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{order.items.length} Units Found</span>
-            </div>
-
-            <div className="divide-y divide-white/[0.03]">
+      <div className="grid grid-cols-12 gap-10">
+        {/* ─── ORDER ITEMS ─── */}
+        <div className="col-span-12 lg:col-span-8 space-y-10">
+          <div className="bg-[#111111] border border-white/[0.05] rounded-[2.5rem] overflow-hidden p-10">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/30 mb-10">Manifest_Registry</h3>
+            <div className="space-y-8">
               {order.items.map((item) => (
-                <div key={item.id} className="p-10 flex gap-10 group hover:bg-white/[0.01] transition-all">
-                  <div className="w-24 h-24 bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden relative flex-shrink-0 group-hover:border-white/20 transition-all duration-500">
-                    {item.product.images[0] ? (
-                      <Image 
-                        src={item.product.images[0].url} 
-                        alt={item.name}
-                        fill
-                        className="object-cover opacity-60 group-hover:opacity-100 transition-opacity"
+                <div key={item.id} className="flex items-center gap-8 group">
+                  <div className="w-24 h-32 bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden flex-shrink-0 relative">
+                    {item.imageUrl || item.product?.images[0]?.url ? (
+                      <img 
+                        src={item.imageUrl || item.product?.images[0]?.url} 
+                        alt={item.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-white/5">
-                        <Package className="w-8 h-8" />
+                        <ShoppingBag className="w-8 h-8" />
                       </div>
                     )}
                   </div>
-                  
-                  <div className="flex-1 flex flex-col justify-center">
-                    <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-[14px] font-bold text-white mb-1.5">{item.name}</h3>
+                        <h4 className="text-[14px] font-black text-white uppercase tracking-wider mb-2">{item.name}</h4>
                         <div className="flex gap-4">
-                           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Size: <span className="text-white/60">{item.size}</span></p>
-                           {item.color && <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Color: <span className="text-white/60">{item.color}</span></p>}
+                          <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Size: <span className="text-white/60">{item.size}</span></p>
+                          <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Qty: <span className="text-white/60">{item.quantity}</span></p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-[13px] font-bold text-white">{formatNaira(Number(item.price))}</p>
-                        <p className="text-[10px] font-bold text-white/20 mt-1 uppercase tracking-widest">×{item.quantity}</p>
-                      </div>
+                      <p className="font-mono text-[14px] text-white">{formatNaira(Number(item.price))}</p>
+                    </div>
+                    <div className="mt-6 pt-6 border-t border-white/5 flex justify-between items-center">
+                      <p className="text-[9px] font-black text-white/10 uppercase tracking-[0.3em]">Line_Total</p>
+                      <p className="font-mono text-[12px] text-white/40">{formatNaira(Number(item.total))}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="p-10 bg-white/[0.01] border-t border-white/5">
-               <div className="flex flex-col gap-4 max-w-xs ml-auto">
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-white/30">
-                    <span>Subtotal</span>
-                    <span>{formatNaira(Number(order.subtotal))}</span>
-                  </div>
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-white/30">
-                    <span>Shipping</span>
-                    <span>{formatNaira(Number(order.shippingCost))}</span>
-                  </div>
-                  {Number(order.discountAmount) > 0 && (
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-red-500">
-                      <span>Discount</span>
-                      <span>-{formatNaira(Number(order.discountAmount))}</span>
-                    </div>
-                  )}
-                  <div className="h-[1px] bg-white/10 my-2" />
-                  <div className="flex justify-between text-xl font-black text-white">
-                    <span className="uppercase tracking-tighter">Total</span>
-                    <span>{formatNaira(Number(order.total))}</span>
-                  </div>
-               </div>
+            <div className="mt-12 pt-12 border-t-2 border-white/5 space-y-4">
+              <div className="flex justify-between items-center text-white/30">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Subtotal</p>
+                <p className="font-mono text-[13px]">{formatNaira(Number(order.subtotal))}</p>
+              </div>
+              <div className="flex justify-between items-center text-white/30">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Shipping</p>
+                <p className="font-mono text-[13px]">{formatNaira(Number(order.shippingCost))}</p>
+              </div>
+              {Number(order.discountAmount) > 0 && (
+                <div className="flex justify-between items-center text-red-500/50">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em]">Discount</p>
+                  <p className="font-mono text-[13px]">-{formatNaira(Number(order.discountAmount))}</p>
+                </div>
+              )}
+              <div className="flex justify-between items-center pt-4">
+                <p className="text-[12px] font-black uppercase tracking-[0.4em] text-white">Grand_Total</p>
+                <p className="text-[24px] font-black text-white text-aura-glow">{formatNaira(Number(order.total))}</p>
+              </div>
             </div>
-          </section>
+          </div>
+          
+          {/* Order Status Timeline (Coming Soon or Simple View) */}
+          <div className="p-10 glass-aura rounded-[2.5rem]">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/30 mb-8">System_Timeline</h3>
+            <div className="space-y-8 relative">
+              <div className="absolute left-[15px] top-2 bottom-2 w-[1px] bg-white/5" />
+              
+              <div className="flex gap-6 relative z-10">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${
+                  ['DELIVERED'].includes(order.status) ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-black border-white/10 text-white/20'
+                }`}>
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black text-white uppercase tracking-widest">Delivered</p>
+                  <p className="text-[9px] text-white/20 uppercase font-bold mt-1">Order reached destination</p>
+                </div>
+              </div>
+
+              <div className="flex gap-6 relative z-10">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${
+                  ['SHIPPED', 'DELIVERED'].includes(order.status) ? 'bg-blue-500 border-blue-500 text-white' : 'bg-black border-white/10 text-white/20'
+                }`}>
+                  <Truck className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black text-white uppercase tracking-widest">Shipped</p>
+                  <p className="text-[9px] text-white/20 uppercase font-bold mt-1">In transit via logistics partner</p>
+                </div>
+              </div>
+
+              <div className="flex gap-6 relative z-10">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center border bg-white/10 border-white/20 text-white">
+                  <Package className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black text-white uppercase tracking-widest">Order Confirmed</p>
+                  <p className="text-[9px] text-white/20 uppercase font-bold mt-1">Payment verified and logged</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* ─── RIGHT COLUMN: LOGISTICS ────────────────────────── */}
-        <div className="col-span-12 xl:col-span-4 space-y-10">
-          {/* FULFILLMENT ACTIONS */}
-          <section className="p-8 bg-black border border-white/10 rounded-[2.5rem] shadow-2xl">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/20 mb-8 flex items-center gap-3">
-               <Package className="w-3.5 h-3.5" /> Fulfillment Master
+        {/* ─── CUSTOMER & SHIPPING ─── */}
+        <div className="col-span-12 lg:col-span-4 space-y-10">
+          {/* Customer Card */}
+          <div className="p-10 glass-aura rounded-[2.5rem] relative overflow-hidden group">
+             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 flex items-center justify-between">
+              Customer_Identity
+              <User className="w-4 h-4 text-white/10" />
             </h3>
-            <OrderActionButtons orderId={order.id} currentStatus={order.status} />
-          </section>
-
-          {/* CUSTOMER IDENTITY */}
-          <section className="p-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] space-y-8">
-            <div className="flex items-center justify-between">
-               <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/20">Customer Identity</h3>
-               <User className="w-4 h-4 text-white/10" />
-            </div>
-
-            <div className="flex items-center gap-5">
-               <div className="w-14 h-14 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center text-xl font-black text-white/20">
-                 {(order.guestFirstName || order.customer?.firstName)?.[0]}
-               </div>
-               <div>
-                 <p className="text-lg font-bold text-white">{order.guestFirstName || order.customer?.firstName} {order.guestLastName || order.customer?.lastName}</p>
-                 <Link 
-                   href={order.customerId ? `/admin/customers/${order.customerId}` : "#"} 
-                   className="text-[10px] font-bold text-white/30 uppercase tracking-widest hover:text-white transition-colors flex items-center gap-1.5 mt-1"
-                 >
-                   View Profile <ExternalLink className="w-2.5 h-2.5" />
-                 </Link>
-               </div>
-            </div>
-
-            <div className="space-y-6 pt-4 border-t border-white/5">
-               <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-white/[0.02] flex items-center justify-center text-white/20">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-0.5">Email</p>
-                    <p className="text-[12px] font-medium text-white/70">{order.guestEmail || order.customer?.email}</p>
-                  </div>
-               </div>
-               <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-white/[0.02] flex items-center justify-center text-white/20">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-0.5">Shipping Address</p>
-                    {order.address ? (
-                      <p className="text-[12px] font-medium text-white/70 leading-relaxed">
-                        {order.address.addressLine1}, {order.address.city}, {order.address.state}, {order.address.country}
-                      </p>
-                    ) : (
-                      <p className="text-[12px] font-medium text-white/20 italic">No address attached</p>
-                    )}
-                  </div>
-               </div>
-            </div>
-          </section>
-
-          {/* PAYMENT TELEMETRY */}
-          <section className="p-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] relative overflow-hidden">
-             <div className="flex items-center justify-between mb-8">
-               <div className="flex items-center gap-3">
-                  <CreditCard className="w-4 h-4 text-emerald-500/40" />
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">Payment Telemetry</h3>
-               </div>
-               <div className={`px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-widest ${order.paymentStatus === 'PAID' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                 {order.paymentStatus}
-               </div>
-             </div>
-
-             <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                   <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Gateway</span>
-                   <span className="text-[11px] font-bold text-white/70">Paystack</span>
+            {order.customer ? (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Account</p>
+                  <Link href={`/admin/customers/${order.customer.id}`} className="text-[13px] font-black text-white uppercase tracking-widest hover:text-aura-glow transition-all flex items-center gap-2">
+                    @{order.customer.username}
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
                 </div>
-                <div className="flex justify-between items-center">
-                   <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Reference</span>
-                   <span className="text-[11px] font-mono text-white/40">{order.paystackRef || "N/A"}</span>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Email Address</p>
+                  <p className="text-[13px] font-black text-white lowercase tracking-tight">{order.customer.email}</p>
                 </div>
-             </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                 <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Guest Profile</p>
+                  <p className="text-[13px] font-black text-white uppercase tracking-widest">{order.guestFirstName} {order.guestLastName}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Contact Email</p>
+                  <p className="text-[13px] font-black text-white lowercase tracking-tight">{order.guestEmail}</p>
+                </div>
+              </div>
+            )}
+          </div>
 
-             <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
-          </section>
+          {/* Shipping Address */}
+          <div className="p-10 glass-aura rounded-[2.5rem] relative overflow-hidden">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 flex items-center justify-between">
+              Logistics_Destination
+              <MapPin className="w-4 h-4 text-white/10" />
+            </h3>
+            {address ? (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Recipient</p>
+                  <p className="text-[13px] font-black text-white uppercase tracking-widest">{address.fullName}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Address</p>
+                  <p className="text-[13px] font-black text-white uppercase tracking-widest leading-relaxed">
+                    {address.line1}<br />
+                    {address.line2 && <>{address.line2}<br /></>}
+                    {address.city}, {address.state}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-2">Phone Number</p>
+                  <p className="text-[13px] font-black text-white uppercase tracking-widest">{address.phone}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 border border-dashed border-red-500/20 rounded-2xl text-center">
+                <AlertCircle className="w-5 h-5 text-red-500/40 mx-auto mb-2" />
+                <p className="text-[9px] font-black uppercase tracking-widest text-red-500/40">No address logged</p>
+              </div>
+            )}
+          </div>
+
+          {/* Payment Snapshot */}
+          <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem]">
+             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 flex items-center justify-between">
+              Payment_Intelligence
+              <CreditCard className="w-4 h-4 text-white/10" />
+            </h3>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20">Method</p>
+                <p className="text-[10px] font-black text-white uppercase">Paystack</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20">Gateway Ref</p>
+                <p className="text-[10px] font-mono text-white/40">{order.paystackRef || 'N/A'}</p>
+              </div>
+              <div className="pt-4 border-t border-white/5 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${order.paymentStatus === 'PAID' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500'}`} />
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">Status</p>
+                </div>
+                <p className={`text-[10px] font-black uppercase ${order.paymentStatus === 'PAID' ? 'text-emerald-500' : 'text-amber-500'}`}>{order.paymentStatus}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

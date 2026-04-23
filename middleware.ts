@@ -15,7 +15,20 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // ── Admin route protection ──────────────────
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { get: (n) => request.cookies.get(n)?.value } }
+  )
+  const { data: { session } } = await supabase.auth.getSession()
+
+  // 1. Logged-in users cannot visit auth pages
+  const authRoutes = ["/login", "/register", "/signup", "/auth", "/forgot-password"]
+  if (session && authRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL("/", request.url))
+  }
+
+  // 2. Admin route protection ──────────────────
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     const adminToken = request.cookies.get("admin_token")?.value
 
@@ -31,21 +44,17 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // ── Customer account protection ─────────────
+  // 3. Customer account protection ─────────────
   if (pathname.startsWith("/account")) {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { get: (n) => request.cookies.get(n)?.value } }
-    )
-    const { data: { session } } = await supabase.auth.getSession()
-
     if (!session) {
-      return NextResponse.redirect(
-        new URL(`/login?redirect=${pathname}`, request.url)
-      )
+      const loginUrl = new URL("/auth", request.url)
+      loginUrl.searchParams.set("redirectTo", pathname)
+      return NextResponse.redirect(loginUrl)
     }
   }
+
+  // Never redirect /auth itself — prevents infinite loop
+  if (pathname === "/auth") return response
 
   return response
 }

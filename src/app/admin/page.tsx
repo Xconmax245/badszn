@@ -25,6 +25,7 @@ interface DashboardData {
   revenue: { total: number; today: number; growth: number }
   orders: { total: number; today: number; pending: number; growth: number }
   customers: { total: number; newToday: number; retention: number }
+  visitors: { total: number; today: number; returning: number }
   inventory: { status: string; critical: number; low: number }
   fetchedAt: string
   activity?: any[]
@@ -45,6 +46,7 @@ type MetricCardProps = {
 function MetricCard({ label, value, growth, status, sub, delay }: MetricCardProps) {
   const Icon = label.includes("Orders") ? ShoppingBag : 
                label.includes("Revenue") ? TrendingUp :
+               label.includes("Visitors") || label.includes("Visits") ? ExternalLink :
                label.includes("Customers") ? Users : Package
 
   return (
@@ -122,6 +124,20 @@ function deriveMetrics(data: DashboardData | null): MetricCardProps[] {
       sub:    data ? `${data.inventory.critical} critical · ${data.inventory.low} low` : "Stock unverified",
       delay:  300
     },
+    {
+      label:  "Total Visits",
+      value:  data ? String(data.visitors.total) : "—",
+      growth: null,
+      sub:    data ? `${data.visitors.today} today · ${data.visitors.returning} returning` : "Traffic offline",
+      delay:  400
+    },
+    {
+      label:  "Audience Flow",
+      value:  data ? `${Math.round((data.visitors.returning / (data.visitors.total || 1)) * 100)}%` : "—",
+      growth: null,
+      sub:    "Returning visitor ratio",
+      delay:  500
+    },
   ]
 }
 
@@ -193,7 +209,7 @@ export default function AdminDashboard() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-6">
           {statsLoading && !statsData ? (
              Array.from({ length: 4 }).map((_, i) => (
               <MetricCardSkeleton key={i} />

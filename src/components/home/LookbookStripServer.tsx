@@ -5,25 +5,28 @@ import LookbookStrip from "./LookbookStrip"
 export const revalidate = 3600 // Revalidate every hour, or tag-based if preferred
 
 export default async function LookbookStripServer() {
-  // Fetch from DB
-  const entries = await prisma.lookbookEntry.findMany({
-    where: {
-      isPublished: true
-    },
-    orderBy: [
-      { sortOrder: 'asc' },
-      { createdAt: 'desc' }
-    ],
-    // Let's cap at 20 initially to keep the page fast,
-    // though the prompt says "NO LIMIT", 20 is a safe "soft limit".
-    take: 20,
-    select: {
-      id: true,
-      imageUrl: true,
-      title: true,
-      layoutType: true,
-    }
-  })
+  let entries = []
+  try {
+    entries = await prisma.lookbookEntry.findMany({
+      where: {
+        isPublished: true
+      },
+      orderBy: [
+        { sortOrder: 'asc' },
+        { createdAt: 'desc' }
+      ],
+      take: 20,
+      select: {
+        id: true,
+        imageUrl: true,
+        title: true,
+        layoutType: true,
+      }
+    })
+  } catch (error) {
+    console.error("LookbookStripServer: Failed to fetch entries", error)
+    return null
+  }
 
   if (!entries || entries.length === 0) return null
 

@@ -16,6 +16,7 @@ export async function POST(request: Request) {
       password,
       options: {
         data: {
+          full_name: `${firstName} ${lastName}`.trim(),
           first_name: firstName,
           last_name: lastName,
         }

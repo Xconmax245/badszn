@@ -37,7 +37,7 @@ export default async function ProfilePage() {
         
         <div className="flex flex-col gap-4">
           <button className="w-full py-4 text-xs font-black uppercase tracking-widest bg-white text-black hover:bg-accent-red hover:text-white transition-all duration-500 rounded-sm">
-            Edit Vault
+            Edit Account
           </button>
           
           <form action="/api/auth/signout" method="post">

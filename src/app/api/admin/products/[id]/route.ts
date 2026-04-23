@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   request: Request,
@@ -39,7 +40,12 @@ export async function PATCH(
         basePrice: basePrice || undefined,
         compareAtPrice: compareAtPrice || undefined,
         categoryId,
-        collectionId: collectionId || null,
+        ...(collectionId !== undefined ? {
+          collections: {
+            deleteMany: {},
+            ...(collectionId ? { create: [{ collectionId }] } : {})
+          }
+        } : {}),
         status,
         isNew,
         isFeatured,
@@ -53,6 +59,9 @@ export async function PATCH(
         variants: true
       }
     });
+
+    revalidatePath("/shop");
+    revalidatePath("/");
 
     return NextResponse.json(updatedProduct);
   } catch (error: any) {
@@ -74,6 +83,9 @@ export async function DELETE(
     await prisma.product.delete({
       where: { id: productId }
     });
+
+    revalidatePath("/shop");
+    revalidatePath("/");
 
     return NextResponse.json({ success: true });
   } catch (error) {

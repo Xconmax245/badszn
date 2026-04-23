@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -66,7 +67,11 @@ export async function POST(request: Request) {
         material,
         fit,
         careInstructions,
-        collectionId: collectionId || null,
+        ...(collectionId ? {
+          collections: {
+            create: [{ collectionId }]
+          }
+        } : {}),
         images: {
           create: images.map((img: any) => ({
             url: img.url,
@@ -90,6 +95,9 @@ export async function POST(request: Request) {
         variants: true
       }
     });
+
+    revalidatePath("/shop");
+    revalidatePath("/"); // in case they appear on the homepage
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error: any) {

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
-import { BarChart3, Database, Globe, Zap } from "lucide-react"
+import { BarChart3 } from "lucide-react"
 import SiteConfigForm from "@/components/admin/SiteConfigForm"
+import { ShopControlPanel } from "@/components/admin/ShopControlPanel"
 
 export default async function AdminSettingsPage() {
   const config = await prisma.siteConfig.findUnique({
@@ -11,22 +12,28 @@ export default async function AdminSettingsPage() {
     <div className="space-y-16 animate-in fade-in duration-1000">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-white mb-2">Global Settings</h1>
-          <p className="text-[12px] font-medium uppercase tracking-[0.2em] text-white/20">Operational Controls and Brand Configuration</p>
+          <h1 className="text-4xl font-black tracking-tight text-white mb-2">System_Configuration</h1>
+          <p className="text-[12px] font-medium uppercase tracking-[0.2em] text-white/20">Operational Controls and Global Logic</p>
         </div>
         
         <div className="hidden lg:flex items-center gap-6">
           <div className="text-right">
-            <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest block mb-1">System Version</span>
-            <span className="text-[12px] font-semibold text-white/40 leading-none">v1.4.0 High-Availability</span>
+            <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest block mb-1">Node Version</span>
+            <span className="text-[12px] font-semibold text-white/40 leading-none">v{process.version} Production</span>
           </div>
           <div className="h-10 w-[1px] bg-white/10" />
         </div>
       </div>
 
       <div className="grid grid-cols-12 gap-10">
-        <div className="col-span-12 xl:col-span-8">
-           <SiteConfigForm initialData={config} />
+        <div className="col-span-12 xl:col-span-8 space-y-16">
+          {/* Site Config (Brand, Hero, Footer) */}
+          <SiteConfigForm initialData={config} />
+          
+          {/* Shop Control (Inventory, Visibility, Badges) */}
+          <div className="p-10 bg-black border border-white/5 rounded-[2.5rem]">
+            <ShopControlPanel />
+          </div>
         </div>
 
         <div className="col-span-12 xl:col-span-4 space-y-10">

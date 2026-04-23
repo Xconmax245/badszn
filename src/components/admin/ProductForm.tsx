@@ -441,7 +441,7 @@ export default function ProductForm({ initialData, categories, collections }: Pr
               
               {initialData && (
                 <button 
-                  onClick={() => window.open(`/shop/${formData.slug}`, "_blank")}
+                  onClick={() => window.open(`/shop`, "_blank")}
                   className="w-full bg-white/[0.03] border border-white/5 text-white/30 py-5 rounded-full font-black uppercase text-xs tracking-[0.25em] hover:bg-white/[0.05] hover:text-white transition-all flex items-center justify-center gap-3"
                 >
                   <Eye className="w-4 h-4" /> VIEW_ON_SITE

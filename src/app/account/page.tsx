@@ -26,7 +26,7 @@ export default async function AccountPage() {
 
   // This is a double-check backup to the middleware
   if (!session) {
-    redirect("/login")
+    redirect("/auth")
   }
 
   // Temporary redirect to profile until we build the dashboard

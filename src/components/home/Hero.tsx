@@ -2,13 +2,16 @@
 
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import SectionDivider from "@/components/shared/SectionDivider";
+import { useAuthState } from "@/hooks/useAuthState";
 
 // ─── Premium easing ──────────────────────────────────────
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero({ headline, subtitle }: { headline?: string | null, subtitle?: string | null }) {
+  const { isAuthenticated, loading } = useAuthState();
   const containerRef = useRef<HTMLElement>(null);
 
   // ─── Scroll-driven parallax values (AMPLIFIED) ─────────
@@ -183,13 +186,13 @@ export default function Hero({ headline, subtitle }: { headline?: string | null,
           <p className="text-white/50 text-[10px] md:text-xs tracking-[0.25em] uppercase font-medium">
             {subtitle || "New Drop — Available Now"}
           </p>
-          <a
-            href="/shop"
+          <Link
+            href={isAuthenticated ? "/shop" : "/auth"}
             className="inline-flex items-center px-8 py-3 text-xs md:text-sm font-bold tracking-widest uppercase rounded-none bg-text-primary text-bg-primary border border-text-primary transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-accent-red-hover hover:border-accent-red-hover hover:text-text-primary hover:scale-[1.02] active:scale-100 will-change-transform cursor-pointer"
             data-cursor="hover"
           >
-            Shop Now
-          </a>
+            {isAuthenticated ? "Shop Now" : "Enter"}
+          </Link>
         </motion.div>
 
         {/* Bottom-left edition label */}

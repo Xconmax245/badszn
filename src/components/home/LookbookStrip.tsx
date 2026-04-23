@@ -11,6 +11,7 @@ import {
 } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
+import { useAuthState } from "@/hooks/useAuthState"
 
 // ── Types ─────────────────────────────────────
 export type LookbookLayoutType = "SMALL" | "MEDIUM" | "LARGE" | "OVERSIZED"
@@ -45,6 +46,7 @@ const WIDTH_MAP: Record<LookbookLayoutType, string> = {
 }
 
 export default function LookbookStrip({ entries }: LookbookStripProps) {
+  const { isAuthenticated, loading } = useAuthState()
   const sectionRef = useRef<HTMLElement>(null)
   const scrollRef  = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -218,7 +220,9 @@ export default function LookbookStrip({ entries }: LookbookStripProps) {
       {/* ═══════════════════════════════════════════
           LAYER 3 — The horizontal strip
           ═══════════════════════════════════════════ */}
-      <div className="relative w-full z-10">
+      <div 
+        className="relative w-full z-10 transition-[filter] duration-700 ease-out"
+      >
         {/* Edge fade masks */}
         <div className="absolute inset-y-0 left-0 w-12 md:w-40 bg-gradient-to-r from-black via-black/80 to-transparent z-20 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-12 md:w-40 bg-gradient-to-l from-black via-black/80 to-transparent z-20 pointer-events-none" />

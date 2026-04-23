@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
+import { useCartStore } from "@/stores/cartStore";
+import { UserMenu } from "./UserMenu";
+import { useUser } from "@/hooks/useUser";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 // ─── Types ────────────────────────────────────────────────
 interface NavItem {
@@ -27,11 +30,14 @@ const MobileMenu = ({
   items,
   onClose,
   pathname,
+  isAuthenticated,
 }: {
   items: NavItem[];
   onClose: () => void;
   pathname: string;
+  isAuthenticated: boolean;
 }) => {
+  const router = useRouter();
 
   return (
     <motion.div
@@ -79,6 +85,39 @@ const MobileMenu = ({
             </motion.div>
           );
         })}
+
+        {/* STEP 5: Sign Out in Mobile Menu */}
+        {isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.35, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <button
+              onClick={async () => {
+                const supabase = getSupabaseBrowserClient()
+                const { error } = await supabase.auth.signOut()
+                if (error) {
+                  console.error("Sign out failed:", error)
+                  return
+                }
+                onClose()
+                router.push("/")
+                router.refresh()
+              }}
+              className="
+                w-full text-left
+                py-5 border-b border-white/[0.07]
+                text-[clamp(1.75rem,8vw,3rem)] font-black
+                tracking-[-0.03em] uppercase
+                text-white/20 hover:text-white/40
+                transition-colors duration-200
+              "
+            >
+              Sign Out
+            </button>
+          </motion.div>
+        )}
       </nav>
 
       {/* Bottom CTA block */}
@@ -98,7 +137,7 @@ const MobileMenu = ({
         </Link>
         <div className="flex gap-3">
           <Link
-            href="/account"
+            href={isAuthenticated ? "/account" : "/auth"}
             onClick={onClose}
             className="flex-1 flex items-center justify-center py-3.5 rounded-full border border-white/[0.12] text-white/60 text-xs font-bold tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all duration-200"
             data-cursor="hover"
@@ -121,26 +160,23 @@ const MobileMenu = ({
 
 // ─── SVG Icons ────────────────────────────────────────────
 const SearchIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    <path d="M21 21l-4.35-4.35" />
   </svg>
 );
 
 const CartIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <path d="M16 10a4 4 0 0 1-8 0" />
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="20" cy="21" r="1" />
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
   </svg>
 );
 
-const AccountIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-);
+const AccountIcon = ({ active, user }: { active?: boolean; user?: any }) => {
+  return null; // No longer used in desktop, kept for mobile if needed
+};
 
 // ─── Navbar ───────────────────────────────────────────────
 export default function Navbar({ announcement }: { announcement?: string | null }) {
@@ -148,37 +184,18 @@ export default function Navbar({ announcement }: { announcement?: string | null 
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   
-  // Auth state
-  const [user, setUser] = useState<any>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { toggleCart, itemCount } = useCartStore();
+  const cartCount = itemCount();
+  const { user, isLoading } = useUser();
+  const isAuthenticated = !!user;
 
-  // Sync auth state
+  // Hydration guard
   useEffect(() => {
-    const supabase = createClient();
-    
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
+    setMounted(true);
   }, []);
-
-  const handleSignOut = async () => {
-    await fetch("/api/auth/signout", { method: "POST" });
-    setUser(null);
-    router.refresh();
-    router.push("/");
-  };
 
   // Close menu on route change
   useEffect(() => {
@@ -200,13 +217,6 @@ export default function Navbar({ announcement }: { announcement?: string | null 
     };
   }, [mobileOpen]);
 
-  // Close dropdown on click outside
-  useEffect(() => {
-    if (!userMenuOpen) return;
-    const handleClick = () => setUserMenuOpen(false);
-    window.addEventListener("click", handleClick);
-    return () => window.removeEventListener("click", handleClick);
-  }, [userMenuOpen]);
 
   return (
     <>
@@ -214,7 +224,7 @@ export default function Navbar({ announcement }: { announcement?: string | null 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: EASE }}
-        className="fixed top-0 left-0 w-full z-50 flex justify-center px-3 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-5"
+        className="fixed left-0 w-full z-50 flex justify-center px-3 sm:px-4 md:px-6 transition-all duration-500 top-3 sm:pt-4 md:pt-5"
       >
         <nav
           className={`
@@ -293,7 +303,8 @@ export default function Navbar({ announcement }: { announcement?: string | null 
               onMouseLeave={() => setHoveredKey(null)}
               data-cursor="hover"
             >
-              <button
+              <Link
+                href="/search"
                 aria-label="Search"
                 className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full text-white/50 hover:text-white transition-all duration-300 hover:scale-110"
               >
@@ -305,7 +316,7 @@ export default function Navbar({ announcement }: { announcement?: string | null 
                   />
                 )}
                 <SearchIcon />
-              </button>
+              </Link>
             </div>
 
             <div
@@ -315,6 +326,7 @@ export default function Navbar({ announcement }: { announcement?: string | null 
               data-cursor="hover"
             >
               <button
+                onClick={toggleCart}
                 aria-label="Cart"
                 className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full text-white/50 hover:text-white transition-all duration-300 hover:scale-110"
               >
@@ -326,81 +338,16 @@ export default function Navbar({ announcement }: { announcement?: string | null 
                   />
                 )}
                 <CartIcon />
-                <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-red-500 border border-black" />
+                {mounted && cartCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[8px] font-black text-white">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
               </button>
             </div>
 
-            {/* ─── QUIET ENTRY AUTH ─── */}
-            <div className="relative ml-8 mr-2 hidden lg:block">
-              {user ? (
-                <div className="relative">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setUserMenuOpen(!userMenuOpen);
-                    }}
-                    className="text-[13px] font-medium text-white/70 hover:text-white transition-colors duration-150 flex items-center gap-2"
-                    data-cursor="hover"
-                  >
-                    {user.user_metadata?.first_name || "Account"}
-                    <motion.span
-                      animate={{ rotate: userMenuOpen ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-[8px] opacity-30"
-                    >
-                      ▼
-                    </motion.span>
-                  </button>
-
-                  <AnimatePresence>
-                    {userMenuOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
-                        className="absolute right-0 mt-4 w-48 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-1.5"
-                      >
-                        <div className="px-4 py-2 mb-1">
-                          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Identity</p>
-                          <p className="text-[11px] font-medium text-white/40 truncate">{user.email}</p>
-                        </div>
-                        
-                        {[
-                          { label: "Account", href: "/account" },
-                          { label: "Orders", href: "/account/orders" },
-                          { label: "Settings", href: "/account/settings" },
-                        ].map((link) => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            className="block w-full text-left px-4 py-2.5 text-[12px] font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                          >
-                            {link.label}
-                          </Link>
-                        ))}
-                        
-                        <div className="h-[1px] bg-white/5 my-1.5 mx-2" />
-                        
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2.5 text-[12px] font-medium text-red-500/70 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all"
-                        >
-                          Sign out
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <Link 
-                  href="/login" 
-                  className="text-[13px] font-medium text-white/70 hover:text-white transition-colors duration-150"
-                  data-cursor="hover"
-                >
-                  Sign in
-                </Link>
-              )}
+            <div className="hidden md:flex ml-1">
+              <UserMenu />
             </div>
 
             <div
@@ -434,12 +381,17 @@ export default function Navbar({ announcement }: { announcement?: string | null 
             </div>
 
             <button
+              onClick={toggleCart}
               aria-label="Cart"
               className="relative md:hidden flex items-center justify-center w-9 h-9 rounded-full text-white/70 hover:text-white transition-colors"
               data-cursor="hover"
             >
               <CartIcon />
-              <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-red-500 border border-black" />
+              {mounted && cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[8px] font-black text-white">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
             </button>
 
             <button
@@ -475,6 +427,7 @@ export default function Navbar({ announcement }: { announcement?: string | null 
             items={NAV_ITEMS}
             onClose={() => setMobileOpen(false)}
             pathname={pathname}
+            isAuthenticated={isAuthenticated}
           />
         )}
       </AnimatePresence>

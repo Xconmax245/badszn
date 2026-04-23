@@ -3,7 +3,7 @@ import LoginForm from "@/components/auth/LoginForm"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Vault | BAD SZN",
+  title: "Account | BAD SZN",
   description: "Secure terminal entry.",
 }
 

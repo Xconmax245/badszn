@@ -1,11 +1,16 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Loader2, Check } from "lucide-react"
 
-export default function LoginForm() {
+export default function LoginForm({ onToggle }: { onToggle?: () => void }) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirectTo") || "/"
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -39,9 +44,14 @@ export default function LoginForm() {
         return
       }
 
-      // Success - Redirect to account dashboard
-      window.location.href = "/account"
-    } catch (error) {
+      // Success - Redirect to target or homepage
+      router.push(redirectTo)
+    } catch (error: any) {
+      console.error("DEBUG: Fetch Failed Details:", {
+        message: error.message,
+        stack: error.stack,
+        url: "/api/auth/login"
+      });
       triggerShake("System offline. Please try again.")
     } finally {
       setLoading(false)
@@ -55,7 +65,7 @@ export default function LoginForm() {
           WELCOME BACK.
         </h2>
         <p className="text-white/50 text-sm font-medium tracking-widest uppercase mt-4">
-          Access your vault.
+          Access your account.
         </p>
       </div>
 
@@ -128,27 +138,17 @@ export default function LoginForm() {
           </span>
         </button>
 
-        {/* Brutalist Alert Strip */}
+        {/* Simple Minimal Error UI */}
         <AnimatePresence>
           {errorText && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-red-600 text-[10px] font-bold uppercase tracking-widest pt-2"
             >
-              <div className="mt-8 bg-accent-red/10 border-l-4 border-accent-red p-4 flex items-center justify-between">
-                <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-accent-red">
-                  {errorText}
-                </p>
-                <button 
-                  onClick={() => setErrorText("")}
-                  className="text-accent-red hover:text-white transition-colors"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
+              {errorText}
+            </motion.p>
           )}
         </AnimatePresence>
       </form>
@@ -156,9 +156,19 @@ export default function LoginForm() {
       <div className="mt-12 text-center">
         <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/30">
           No access yet?{" "}
-          <Link href="/signup" className="text-white hover:text-accent-red transition-colors" data-cursor="hover">
-            Request Access <ArrowRight className="inline-block w-3 h-3 ml-1 -mt-0.5" />
-          </Link>
+          {onToggle ? (
+            <button 
+              onClick={onToggle}
+              className="text-white hover:text-accent-red transition-colors underline underline-offset-4 decoration-white/10" 
+              data-cursor="hover"
+            >
+              Request Access <ArrowRight className="inline-block w-3 h-3 ml-1 -mt-0.5" />
+            </button>
+          ) : (
+            <Link href="/signup" className="text-white hover:text-accent-red transition-colors" data-cursor="hover">
+              Request Access <ArrowRight className="inline-block w-3 h-3 ml-1 -mt-0.5" />
+            </Link>
+          )}
         </p>
       </div>
     </div>

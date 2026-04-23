@@ -10,17 +10,23 @@ cloudinary.config({
 export default cloudinary;
 
 /**
- * Server-side helper to upload an image from a buffer or base64 string
+ * Server-side helper to upload an image via stream (memory-safe for large files)
  */
-export async function uploadToCloudinary(fileUri: string, folder: string = "products") {
-  try {
-    const res = await cloudinary.uploader.upload(fileUri, {
-      folder,
-      resource_type: "auto",
-    });
-    return res.secure_url;
-  } catch (error) {
-    console.error("Cloudinary Upload Error:", error);
-    throw new Error("Failed to upload image to Cloudinary");
-  }
+export async function uploadToCloudinary(fileBuffer: Buffer, folder: string = "products"): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "auto" },
+      (error, result) => {
+        if (result) {
+          resolve(result.secure_url);
+        } else {
+          console.error("Cloudinary Stream Upload Error:", error);
+          reject(error || new Error("Failed to upload image to Cloudinary"));
+        }
+      }
+    );
+    
+    // Write buffer directly to stream
+    uploadStream.end(fileBuffer);
+  });
 }

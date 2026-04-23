@@ -1,53 +1,33 @@
 'use client'
-import { X } from 'lucide-react'
 import { useShopStore } from '@/stores/shopStore'
 
 export function ActiveFilters() {
-  const { category, sizes, availability, sort, search,
-          setCategory, toggleSize, setAvailability, setSort, setSearch, resetFilters } = useShopStore()
+  const {
+    category, sizes, availability, sort, search,
+    resetFilters,
+  } = useShopStore()
 
-  const hasActive = category || sizes.length || availability !== 'all' || sort !== 'newest' || search
+  const parts: string[] = []
+  if (category)              parts.push(category)
+  if (sizes.length)          parts.push(sizes.join(', '))
+  if (availability !== 'all') parts.push(availability.replace('_', ' '))
+  if (sort !== 'newest')     parts.push(sort.replace('_', ' '))
+  if (search)                parts.push(`"${search}"`)
 
-  if (!hasActive) return null
+  if (!parts.length) return null
 
   return (
-    <div className="flex items-center gap-2 mt-3 flex-wrap">
-      <span className="font-mono text-[9px] text-white/20 tracking-[0.3em] uppercase">Active_Filters:</span>
-
-      {category && (
-        <Pill label={category.toUpperCase()} onRemove={() => setCategory(null)} />
-      )}
-      {sizes.map(s => (
-        <Pill key={s} label={s} onRemove={() => toggleSize(s)} />
-      ))}
-      {availability !== 'all' && (
-        <Pill label={availability.replace('_', ' ').toUpperCase()} onRemove={() => setAvailability('all')} />
-      )}
-      {sort !== 'newest' && (
-        <Pill label={sort.replace('_', ' ').toUpperCase()} onRemove={() => setSort('newest')} />
-      )}
-      {search && (
-        <Pill label={`"${search}"`} onRemove={() => setSearch('')} />
-      )}
-
+    <div className="flex items-center gap-4 mt-4">
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+        Active Telemetry: {parts.join(' // ')}
+      </p>
+      <div className="h-px w-4 bg-white/5" />
       <button
         onClick={resetFilters}
-        className="font-mono text-[9px] text-accent-red underline underline-offset-4 ml-2 tracking-widest hover:text-accent-red-hover transition-colors"
+        className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 hover:text-accent-red transition-colors"
       >
-        CLEAR_ALL
+        Reset_Filters
       </button>
     </div>
-  )
-}
-
-function Pill({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <span className="flex items-center gap-1.5 bg-white/5 border border-white/10
-                     font-mono text-[10px] text-white/40 px-2 py-1">
-      {label}
-      <button onClick={onRemove} className="hover:text-white transition-colors">
-        <X size={10} />
-      </button>
-    </span>
   )
 }

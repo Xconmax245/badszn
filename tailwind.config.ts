@@ -19,6 +19,17 @@ const config: Config = {
         "text-muted": "var(--text-muted)",
         "accent-gold": "var(--accent-gold)",
       },
+      fontFamily: {
+        primary: ['var(--font-sans)', 'sans-serif'],
+        display: ['var(--font-sans)', 'sans-serif'],
+        sans:    ['var(--font-sans)', 'sans-serif'],
+      },
+      borderRadius: {
+        premium: '2.5rem',
+      },
+      boxShadow: {
+        cinematic: '0 20px 60px rgba(0,0,0,0.5)',
+      },
       transitionTimingFunction: {
         premium: "cubic-bezier(0.22, 1, 0.36, 1)",
       },

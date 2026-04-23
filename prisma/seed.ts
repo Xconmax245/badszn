@@ -47,6 +47,22 @@ async function main() {
     }
   })
 
+  // ── Seed Shop Settings (Singleton) ─────────
+  await prisma.shopSettings.upsert({
+    where: { id: "singleton" },
+    update: {},
+    create: {
+      id: "singleton",
+      shopEnabled: true,
+      showSaleBadge: true,
+      showStockBadge: true,
+      showNewBadge: true,
+      showSoldOutOverlay: true,
+      enableFilters: true,
+      enableSearch: true,
+    },
+  })
+
   console.log("✅ Database seeded successfully")
 }
 

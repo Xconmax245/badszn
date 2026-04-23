@@ -1,0 +1,144 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+
+interface CheckoutFormProps {
+  form: any
+  setForm: (form: any) => void
+}
+
+export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
+  const [savedAddresses, setSavedAddresses]   = useState<any[]>([])
+  const [selectedAddress, setSelectedAddress] = useState<any>(null)
+  const [saveAddress, setSaveAddress]         = useState(false)
+
+  // Fetch addresses on load
+  useEffect(() => {
+    fetch("/api/addresses")
+      .then(res => res.json())
+      .then(data => {
+        if (data.addresses) {
+          setSavedAddresses(data.addresses)
+          const defaultAddr = data.addresses.find((a: any) => a.isDefault)
+          if (defaultAddr) setSelectedAddress(defaultAddr)
+        }
+      })
+      .catch(err => console.error("Failed to fetch addresses:", err))
+  }, [])
+
+  // Auto-fill form when selected
+  useEffect(() => {
+    if (!selectedAddress) return
+
+    setForm({
+      ...form,
+      fullName: selectedAddress.fullName,
+      phone:    selectedAddress.phone,
+      line1:    selectedAddress.line1,
+      city:     selectedAddress.city,
+      state:    selectedAddress.state,
+    })
+  }, [selectedAddress])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const Input = ({ name, placeholder, type = "text" }: { name: string, placeholder: string, type?: string }) => (
+    <div className="relative group">
+      <input
+        type={type}
+        name={name}
+        value={form[name] || ""}
+        onChange={handleChange}
+        placeholder={placeholder}
+        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
+      />
+    </div>
+  )
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="space-y-12"
+    >
+      {/* Address Selector */}
+      {savedAddresses.length > 0 && (
+        <section className="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-6">Saved_Addresses</h3>
+          <div className="flex flex-col gap-3">
+            {savedAddresses.map(addr => (
+              <button
+                key={addr.id}
+                onClick={() => setSelectedAddress(addr)}
+                className={`text-left p-6 rounded-2xl border transition-all duration-300 ${
+                  selectedAddress?.id === addr.id 
+                    ? "bg-white/5 border-white/20 shadow-aura" 
+                    : "bg-white/[0.01] border-white/5 hover:border-white/10"
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <p className="text-[12px] font-black text-white uppercase tracking-tight">{addr.fullName}</p>
+                  {addr.isDefault && (
+                    <span className="text-[8px] font-black bg-white/10 text-white/40 px-2 py-1 rounded-full uppercase tracking-widest">Default</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-white/30 uppercase font-bold tracking-widest leading-relaxed">
+                  {addr.line1}, {addr.city}, {addr.state}
+                </p>
+              </button>
+            ))}
+          </div>
+          <button 
+            onClick={() => setSelectedAddress(null)}
+            className="mt-6 text-[9px] font-black text-white/40 uppercase tracking-[0.3em] hover:text-white transition-colors"
+          >
+            + Add New Address
+          </button>
+        </section>
+      )}
+
+      <section>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 px-2">01 CONTACT INFORMATION</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input name="fullName" placeholder="Full Name" />
+          <Input name="email" placeholder="Email Address" type="email" />
+          <Input name="phone" placeholder="Phone Number" type="tel" />
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 px-2">02 SHIPPING ADDRESS</h3>
+        <div className="grid grid-cols-1 gap-4">
+          <Input name="line1" placeholder="Street Address" />
+          <div className="grid grid-cols-2 gap-4">
+            <Input name="city" placeholder="City" />
+            <Input name="state" placeholder="State" />
+          </div>
+        </div>
+
+        {/* Save address toggle */}
+        <div className="mt-8 px-2">
+          <label className="flex items-center gap-4 cursor-pointer group">
+            <div className="relative flex items-center justify-center">
+              <input 
+                type="checkbox" 
+                checked={saveAddress} 
+                onChange={(e) => setSaveAddress(e.target.checked)}
+                className="peer appearance-none w-5 h-5 border border-white/10 rounded-md checked:bg-white checked:border-white transition-all duration-300"
+              />
+              <div className="absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-300">
+                <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] group-hover:text-white/50 transition-colors">Save this address for later</span>
+          </label>
+        </div>
+      </section>
+    </motion.div>
+  )
+}

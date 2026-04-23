@@ -38,6 +38,7 @@ yarn-error.log*
 
 # gemini
 .gemini/
+/brain/
 
 # vercel
 .vercel

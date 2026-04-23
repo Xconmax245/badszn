@@ -4,11 +4,13 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Loader2, Check } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 // Types
 type Step = "EMAIL" | "NAME" | "USERNAME" | "PASSWORD"
 
-export default function SignupForm() {
+export default function SignupForm({ onToggle }: { onToggle?: () => void }) {
+  const router = useRouter()
   const [step, setStep] = useState<Step>("EMAIL")
   const [loading, setLoading] = useState(false)
   const [shake, setShake] = useState(false)
@@ -66,9 +68,13 @@ export default function SignupForm() {
         return
       }
 
-      // Success - Redirect to account dashboard
-      window.location.href = "/account"
-    } catch (error) {
+      // Success - Redirect to homepage
+      router.push("/")
+    } catch (error: any) {
+      console.error("DEBUG: Signup Fetch Failed:", {
+        message: error.message,
+        url: "/api/auth/register"
+      });
       triggerShake("System offline. Please try again.")
     } finally {
       setLoading(false)
@@ -322,27 +328,17 @@ export default function SignupForm() {
           )}
         </AnimatePresence>
 
-        {/* Brutalist Alert Strip */}
+        {/* Simple Minimal Error UI */}
         <AnimatePresence>
           {errorText && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-red-600 text-[10px] font-bold uppercase tracking-widest pt-2"
             >
-              <div className="mt-8 bg-accent-red/10 border-l-4 border-accent-red p-4 flex items-center justify-between">
-                <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-accent-red">
-                  {errorText}
-                </p>
-                <button 
-                  onClick={() => setErrorText("")}
-                  className="text-accent-red hover:text-white transition-colors"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
+              {errorText}
+            </motion.p>
           )}
         </AnimatePresence>
       </form>
@@ -350,9 +346,19 @@ export default function SignupForm() {
       <div className="mt-12 text-center">
         <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/30">
           Already have access?{" "}
-          <Link href="/login" className="text-white hover:text-accent-red transition-colors" data-cursor="hover">
-            Sign In.
-          </Link>
+          {onToggle ? (
+            <button 
+              onClick={onToggle}
+              className="text-white hover:text-accent-red transition-colors underline underline-offset-4 decoration-white/10" 
+              data-cursor="hover"
+            >
+              Sign In.
+            </button>
+          ) : (
+            <Link href="/login" className="text-white hover:text-accent-red transition-colors" data-cursor="hover">
+              Sign In.
+            </Link>
+          )}
         </p>
       </div>
     </div>

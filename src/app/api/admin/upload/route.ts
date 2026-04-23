@@ -11,12 +11,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Convert File to Buffer then to Data URI
+    // Convert File to Buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const fileUri = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-    const url = await uploadToCloudinary(fileUri, folder);
+    const url = await uploadToCloudinary(buffer, folder);
 
     return NextResponse.json({ url });
   } catch (error) {

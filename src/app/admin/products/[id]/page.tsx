@@ -3,6 +3,7 @@ import ProductForm from "@/components/admin/ProductForm"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { serializeData } from "@/lib/utils/serialize"
 
 export default async function ProductEditorPage({ params }: { params: { id: string } }) {
   const isNew = params.id === "new"
@@ -53,9 +54,9 @@ export default async function ProductEditorPage({ params }: { params: { id: stri
 
       {/* The Engine Room (Form) */}
       <ProductForm 
-        initialData={initialData} 
-        categories={categories}
-        collections={collections}
+        initialData={serializeData(initialData)} 
+        categories={serializeData(categories)}
+        collections={serializeData(collections)}
       />
     </div>
   )

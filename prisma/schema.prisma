@@ -58,6 +58,7 @@ model Customer {
   returns         Return[]
   notifications   NotificationPreference?
   waitlistEntries WaitlistEntry[]
+  savedAddresses  Address[]
 
   @@map("customers")
 }
@@ -88,6 +89,30 @@ model CustomerAddress {
   orders   Order[]
 
   @@map("customer_addresses")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  customerId  String   @map("customer_id")
+
+  fullName    String   @map("full_name")
+  phone       String
+
+  line1       String
+  line2       String?
+  city        String
+  state       String
+  country     String   @default("Nigeria")
+
+  isDefault   Boolean  @default(false) @map("is_default")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("addresses")
 }
 
 // ─────────────────────────────────────────────
@@ -130,6 +155,7 @@ model Product {
   uniqueness       String?
   modelHeight      String?             @map("model_height")
   modelSize        String?             @map("model_size")
+  details          Json?               @map("details")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
 
@@ -245,6 +271,7 @@ model Order {
   fulfillmentStatus FulfillmentStatus @default(UNFULFILLED) @map("fulfillment_status")
   paystackRef       String?           @unique @map("paystack_ref")
   paystackData      Json?             @map("paystack_data")
+  shippingAddress   Json?             @map("shipping_address")
   shippingMethod    String?           @map("shipping_method")
   trackingNumber    String?           @map("tracking_number")
   trackingUrl       String?           @map("tracking_url")
@@ -624,5 +651,41 @@ model SiteConfig {
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("site_config")
+}
+
+model VisitorSession {
+  id          String   @id @default(cuid())
+  sessionId   String   @unique @map("session_id")
+
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+
+  country     String?
+  city        String?
+
+  firstSeenAt DateTime @default(now()) @map("first_seen_at")
+  lastSeenAt  DateTime @updatedAt @map("last_seen_at")
+
+  visitCount  Int      @default(1) @map("visit_count")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("visitor_sessions")
+}
+
+model ShopSettings {
+  id                   String   @id @default("singleton")
+  shopEnabled          Boolean  @default(true)   @map("shop_enabled")
+  showSaleBadge        Boolean  @default(true)   @map("show_sale_badge")
+  showStockBadge       Boolean  @default(true)   @map("show_stock_badge")
+  showNewBadge         Boolean  @default(true)   @map("show_new_badge")
+  showSoldOutOverlay   Boolean  @default(true)   @map("show_sold_out_overlay")
+  enableFilters        Boolean  @default(true)   @map("enable_filters")
+  enableSearch         Boolean  @default(true)   @map("enable_search")
+  featuredCategorySlug String?                   @map("featured_category_slug")
+  announcementText     String?                   @map("announcement_text")
+  updatedAt            DateTime @updatedAt       @map("updated_at")
+
+  @@map("shop_settings")
 }
 

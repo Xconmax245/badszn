@@ -61,6 +61,16 @@ export async function GET(req: Request) {
     FROM customers
   `, [{ total: 0, newToday: 0, repeat: 0 }])
   const customerCounts = customerCountsResult[0]
+  
+  // 3.5. Visitors (Sequential)
+  const visitorCountsResult = await safeQuery(() => prisma.$queryRaw<any[]>`
+    SELECT 
+      COUNT(*)::int AS total,
+      COUNT(*) FILTER (WHERE first_seen_at >= ${last24h})::int AS today,
+      COUNT(*) FILTER (WHERE visit_count > 1)::int AS returning
+    FROM visitor_sessions
+  `, [{ total: 0, today: 0, returning: 0 }])
+  const visitorCounts = visitorCountsResult[0]
 
   // 4. Inventory (Sequential)
   const criticalStock = await safeQuery(() => prisma.productVariant.count({
@@ -185,6 +195,11 @@ export async function GET(req: Request) {
       retention:  customerCounts.total > 0
         ? Math.round((customerCounts.repeat / customerCounts.total) * 100)
         : 0,
+    },
+    visitors: {
+      total:     visitorCounts.total,
+      today:     visitorCounts.today,
+      returning: visitorCounts.returning,
     },
     inventory: {
       status:   criticalStock > 0 ? "Critical" : lowStock > 0 ? "Low" : "Healthy",
