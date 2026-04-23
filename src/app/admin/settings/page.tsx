@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { BarChart3 } from "lucide-react"
+import { BarChart3, Database, Globe, CreditCard, ShieldCheck, Cpu } from "lucide-react"
 import SiteConfigForm from "@/components/admin/SiteConfigForm"
 import { ShopControlPanel } from "@/components/admin/ShopControlPanel"
 
@@ -9,71 +9,147 @@ export default async function AdminSettingsPage() {
   })
 
   return (
-    <div className="space-y-16 animate-in fade-in duration-1000">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight text-white mb-2">System_Configuration</h1>
-          <p className="text-[12px] font-medium uppercase tracking-[0.2em] text-white/20">Operational Controls and Global Logic</p>
+    <div className="min-h-screen space-y-24 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
+      {/* ─── SYSTEM HEADER ────────────────────────────────────── */}
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-16">
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="h-[1px] w-12 bg-white/40" />
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Control Terminal</span>
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black tracking-[-0.04em] text-white uppercase leading-none">
+            Settings
+          </h1>
+          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/20 max-w-lg leading-relaxed">
+            Global operational parameters and system-wide overrides for the archive.
+          </p>
         </div>
         
-        <div className="hidden lg:flex items-center gap-6">
-          <div className="text-right">
-            <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest block mb-1">Node Version</span>
-            <span className="text-[12px] font-semibold text-white/40 leading-none">v{process.version} Production</span>
+        <div className="flex items-center gap-12 bg-white/[0.02] border border-white/5 p-8 rounded-sm">
+          <div className="space-y-2">
+            <span className="text-[9px] font-black text-white/10 uppercase tracking-widest block">Runtime Environment</span>
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <span className="text-[11px] font-black text-white/60 uppercase tracking-widest">Node {process.version}</span>
+            </div>
           </div>
           <div className="h-10 w-[1px] bg-white/10" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-12 gap-10">
-        <div className="col-span-12 xl:col-span-8 space-y-16">
-          {/* Site Config (Brand, Hero, Footer) */}
-          <SiteConfigForm initialData={config} />
-          
-          {/* Shop Control (Inventory, Visibility, Badges) */}
-          <div className="p-10 bg-black border border-white/5 rounded-[2.5rem]">
-            <ShopControlPanel />
+          <div className="space-y-2">
+            <span className="text-[9px] font-black text-white/10 uppercase tracking-widest block">Security Level</span>
+            <span className="text-[11px] font-black text-white/60 uppercase tracking-widest">Root_Access_01</span>
           </div>
         </div>
+      </header>
 
-        <div className="col-span-12 xl:col-span-4 space-y-10">
-           <div className="p-10 bg-black border border-white/10 rounded-[2.5rem] relative overflow-hidden shadow-2xl">
-              <h3 className="text-[11px] font-bold tracking-[0.2em] text-white/20 flex items-center gap-3 mb-10 uppercase">
-                <BarChart3 className="w-4 h-4" /> System Health
-              </h3>
-              
-              <div className="space-y-8">
-                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                  <span className="text-white/20">Database Status</span>
-                  <span className="text-emerald-500 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Synchronized
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest pt-6 border-t border-white/5">
-                  <span className="text-white/20">Media Storage</span>
-                  <span className="text-white">Cloudinary Production</span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest pt-6 border-t border-white/5">
-                  <span className="text-white/20">Payment Engine</span>
-                  <span className="text-white">Paystack Direct</span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest pt-6 border-t border-white/5">
-                  <span className="text-white/20">Admin Access</span>
-                  <span className="text-white/40">Restricted Level 01</span>
-                </div>
-              </div>
+      <div className="grid grid-cols-12 gap-16">
+        {/* ─── MAIN CONTROLS (LEFT) ───────────────────────────── */}
+        <div className="col-span-12 xl:col-span-8 space-y-24">
+          
+          {/* Shop Control Panel (Master Control) */}
+          <section className="relative">
+            <div className="absolute -top-12 -left-12 opacity-5 pointer-events-none">
+               <Cpu size={120} />
+            </div>
+            <div className="p-12 md:p-16 bg-[#0D0D0D] border border-white/10 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+              <ShopControlPanel />
+            </div>
+          </section>
 
-              {/* Decorative base flourish */}
-              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/[0.02] to-transparent pointer-events-none" />
-           </div>
+          {/* Site Config Form (Brand & Content) */}
+          <section className="space-y-12">
+            <div className="flex items-center gap-4">
+               <div className="h-[1px] w-12 bg-white/10" />
+               <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40 text-center">Identity_Configuration</h2>
+            </div>
+            <SiteConfigForm initialData={config} />
+          </section>
+        </div>
 
-           <div className="px-10 py-8 bg-white/[0.01] border border-dashed border-white/10 rounded-[2rem]">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/10 leading-relaxed text-center">
-                System caution: Configuration changes persist globally. All overrides are audited in the activity stream.
-              </p>
+        {/* ─── SYSTEM TELEMETRY (RIGHT) ────────────────────────── */}
+        <div className="col-span-12 xl:col-span-4 space-y-12">
+           <div className="sticky top-12 space-y-12">
+             <div className="p-12 bg-white/[0.01] border border-white/10 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 text-white/[0.02] group-hover:text-white/[0.05] transition-colors duration-700">
+                  <BarChart3 size={80} />
+                </div>
+
+                <h3 className="text-[11px] font-black tracking-[0.3em] text-white/40 flex items-center gap-4 mb-12 uppercase">
+                  <Activity className="w-4 h-4" /> System_Health
+                </h3>
+                
+                <div className="space-y-10">
+                  <HealthItem 
+                    label="Database Status" 
+                    value="Synchronized" 
+                    status="active" 
+                    icon={<Database size={14} />} 
+                  />
+                  <HealthItem 
+                    label="Media Storage" 
+                    value="Cloudinary Production" 
+                    status="idle" 
+                    icon={<Globe size={14} />} 
+                  />
+                  <HealthItem 
+                    label="Payment Engine" 
+                    value="Paystack Direct" 
+                    status="idle" 
+                    icon={<CreditCard size={14} />} 
+                  />
+                  <HealthItem 
+                    label="Admin Access" 
+                    value="Restricted Level 01" 
+                    status="restricted" 
+                    icon={<ShieldCheck size={14} />} 
+                  />
+                </div>
+
+                {/* Status Bar */}
+                <div className="mt-16 pt-10 border-t border-white/5 flex items-center justify-between">
+                   <div className="flex gap-1">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className={`h-3 w-1 ${i < 6 ? 'bg-emerald-500/40' : 'bg-white/5'}`} />
+                      ))}
+                   </div>
+                   <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Operational Stability: 98.4%</span>
+                </div>
+             </div>
+
+             <div className="p-10 border border-dashed border-white/10 flex flex-col items-center text-center space-y-6">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/10 leading-relaxed max-w-[200px]">
+                  System caution: Configuration changes persist globally. All overrides are audited.
+                </p>
+                <div className="flex items-center gap-4 opacity-20">
+                   <div className="h-px w-8 bg-white" />
+                   <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                   <div className="h-px w-8 bg-white" />
+                </div>
+             </div>
            </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function HealthItem({ label, value, status, icon }: { label: string; value: string; status: 'active' | 'idle' | 'restricted'; icon: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between group/item">
+      <div className="flex items-center gap-4">
+        <div className="text-white/10 group-hover/item:text-white/30 transition-colors duration-500">
+          {icon}
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">{label}</span>
+      </div>
+      <div className="text-right space-y-1">
+        <span className={`text-[10px] font-black uppercase tracking-widest block ${status === 'active' ? 'text-emerald-500' : status === 'restricted' ? 'text-white/40' : 'text-white/70'}`}>
+          {value}
+        </span>
+        {status === 'active' && (
+          <div className="flex justify-end">
+            <div className="h-[1px] w-8 bg-emerald-500/30" />
+          </div>
+        )}
       </div>
     </div>
   )

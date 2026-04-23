@@ -1,23 +1,14 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
-import { jwtVerify } from "jose"
 import { revalidateTag } from "next/cache"
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "fallback_secret")
+import { verifyAdminRequest } from "@/lib/auth/admin"
 
 export async function POST(request: Request) {
   try {
     // 1. Auth check
-    const token = cookies().get("admin_token")?.value
-    if (!token) {
+    const admin = await verifyAdminRequest(request)
+    if (!admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    try {
-      await jwtVerify(token, JWT_SECRET)
-    } catch (err) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 })
     }
 
     // 2. Update config

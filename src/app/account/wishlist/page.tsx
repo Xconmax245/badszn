@@ -9,19 +9,24 @@ export default async function WishlistPage() {
   const customer = await getOrCreateCustomer()
   if (!customer) redirect("/auth")
 
-  const wishlistItems = await prisma.wishlist.findMany({
-    where: { customerId: customer.id },
+  const customerWithWishlist = await prisma.customer.findUnique({
+    where: { id: customer.id },
     include: {
-      product: {
+      wishlist: {
         include: {
-          images: { orderBy: { sortOrder: 'asc' } },
-          variants: true,
-          category: true
+          product: {
+            include: {
+              images: { orderBy: { sortOrder: 'asc' } },
+              variants: true,
+              category: true
+            }
+          }
         }
       }
     }
   })
 
+  const wishlistItems = customerWithWishlist?.wishlist || []
   const config = await getSiteConfig()
 
   return (

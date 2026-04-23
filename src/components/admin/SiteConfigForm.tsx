@@ -334,7 +334,7 @@ export default function SiteConfigForm({ initialData }: SiteConfigFormProps) {
             type="submit"
             disabled={loading}
             className={`
-              min-w-[450px] py-6 px-16 rounded-full text-[13px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-4 transition-all duration-700 shadow-2xl border
+              min-w-[450px] py-6 px-16 rounded-sm text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all duration-700 shadow-2xl border
               ${success ? "bg-emerald-600 text-white border-emerald-500" : "bg-white text-black hover:bg-white/90 active:scale-95 border-white"}
             `}
             data-cursor="hover"
@@ -345,11 +345,11 @@ export default function SiteConfigForm({ initialData }: SiteConfigFormProps) {
                 Synchronizing...
               </span>
             ) : success ? (
-              <><CheckCircle2 className="w-5 h-5" /> Configuration Locked</>
+              <><CheckCircle2 className="w-5 h-5" /> Sync_Applied</>
             ) : (
               <>
-                <Lock className="w-4 h-4 mr-2" /> 
-                Update Site Configuration
+                <Lock className="w-4 h-4" /> 
+                Commit_Changes
               </>
             )}
           </button>
