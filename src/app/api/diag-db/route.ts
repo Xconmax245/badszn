@@ -13,13 +13,25 @@ export async function GET() {
   // Check for pgbouncer param
   const hasPgbouncer = dbUrl.includes("pgbouncer=true")
   
+  // ⚡ Live Prisma Check
+  let prismaError = null
+  let prismaSuccess = false
+  try {
+    const { prisma } = await import("@/lib/prisma")
+    await prisma.$queryRaw`SELECT 1`
+    prismaSuccess = true
+  } catch (err: any) {
+    prismaError = err.message || "Unknown Prisma Error"
+  }
+  
   return NextResponse.json({
     status: "diagnostic_complete",
     detectedPort: port,
     hasPgbouncerParam: hasPgbouncer,
-    maskedConnection: maskedUrl,
-    recommendation: port === "6543" 
-      ? "CRITICAL: You are still on the Pooled Port (6543). Change it to 5432 in Vercel settings." 
-      : "Port 5432 detected. If still crashing, remove ?pgbouncer=true from the URL."
+    prismaConnection: prismaSuccess ? "SUCCESS" : "FAILED",
+    prismaErrorMessage: prismaError,
+    recommendation: prismaSuccess 
+      ? "Database is responding correctly on 5432. If the site shows Offline, it might be an ISR cache issue. Try hard-refreshing." 
+      : "Prisma failed to connect. Review the error message above."
   })
 }
