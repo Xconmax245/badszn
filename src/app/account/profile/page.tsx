@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "@/lib/auth"
+import { getServerUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { ProfileForm } from "@/components/account/ProfileForm"
 import { serializeData } from "@/lib/utils/serialize"

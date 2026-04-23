@@ -56,7 +56,7 @@ export default async function WishlistPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
-            {wishlistItems.map((item) => (
+            {wishlistItems.map((item: any) => (
               <ProductCard 
                 key={item.id} 
                 product={serializeData(item.product) as any} 
