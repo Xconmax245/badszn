@@ -114,7 +114,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       {/* Email (Read Only) */}
       <div className="space-y-2 opacity-50">
         <label className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold">
-          Email Identity (Locked)
+          Account Email
         </label>
         <p className="py-3 text-sm font-medium border-b border-white/5 text-white/40">
           {initialData.email}
@@ -127,8 +127,8 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           disabled={loading}
           className="relative group w-full md:w-auto px-12 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] overflow-hidden transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
         >
-          <span className="relative z-10">{loading ? "Synchronizing..." : "Update Identity"}</span>
-          <div className="absolute inset-0 bg-accent-red translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+          <span className="relative z-10">{loading ? "Saving..." : "Save Changes"}</span>
+          <div className="absolute inset-0 bg-white/10 -translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
         </button>
       </div>
     </motion.form>

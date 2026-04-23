@@ -36,22 +36,22 @@ export default async function WishlistPage() {
       <div className="max-w-7xl mx-auto">
         <header className="mb-20 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="h-[1px] w-12 bg-accent-red" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-red">Selected Artifacts v1.0</span>
+            <div className="h-[1px] w-12 bg-white/20" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Saved Items</span>
           </div>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-[-0.04em] leading-none">
-            WISHLIST<span className="text-white/10">_</span>
+            WISHLIST
           </h1>
-          <p className="text-xs md:text-sm text-white/30 uppercase tracking-[0.3em] font-medium max-w-xl leading-relaxed">
-            Reserved visions. Items you have designated for future acquisition.
+          <p className="text-xs md:text-sm text-white/30 uppercase tracking-[0.2em] font-medium max-w-xl leading-relaxed">
+            Your personal selection of items saved for future consideration.
           </p>
         </header>
 
         {wishlistItems.length === 0 ? (
           <div className="py-24 border border-dashed border-white/10 flex flex-col items-center justify-center text-center space-y-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Empty registry</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">No items found</p>
             <a href="/shop" className="text-xs font-bold uppercase tracking-widest text-white hover:text-accent-red transition-colors">
-              Explore Shop →
+              Discover the Collection →
             </a>
           </div>
         ) : (
@@ -61,7 +61,7 @@ export default async function WishlistPage() {
                 key={item.id} 
                 product={serializeData(item.product) as any} 
                 settings={serializeData(config) as any}
-                onClick={() => {}} // In a real app, this would open quick view or navigate
+                onClick={() => {}} 
               />
             ))}
           </div>
