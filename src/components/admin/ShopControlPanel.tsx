@@ -5,19 +5,17 @@ import useSWR, { mutate } from 'swr'
 import { 
   ShoppingBag, 
   Settings2, 
-  Eye, 
   EyeOff, 
   Tag, 
   Package, 
   Layout, 
   Search as SearchIcon,
   Bell,
-  Save,
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Lock,
-  Activity
+  Save,
+  Monitor
 } from 'lucide-react'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
@@ -70,8 +68,8 @@ export function ShopControlPanel() {
   if (isLoading) {
     return (
       <div className="p-20 flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="animate-spin text-white/10" size={40} />
-        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">Establishing Connection...</p>
+        <Loader2 className="animate-spin text-white/10" size={32} />
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Loading Settings</p>
       </div>
     )
   }
@@ -80,19 +78,15 @@ export function ShopControlPanel() {
 
   return (
     <div className="space-y-16">
-      {/* ─── HEADER TERMINAL ────────────────────────────────────── */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
         <div className="flex items-center gap-6">
-          <div className="h-16 w-16 bg-white/[0.03] flex items-center justify-center border border-white/10 relative group overflow-hidden">
-             <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-             <ShoppingBag className="text-white/40 group-hover:text-white transition-colors relative z-10" size={24} />
+          <div className="h-16 w-16 bg-white/[0.03] flex items-center justify-center border border-white/10 rounded-2xl">
+             <ShoppingBag className="text-white/40" size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight uppercase">Shop_Operations</h2>
-            <div className="flex items-center gap-3 mt-1">
-              <Activity size={10} className="text-emerald-500 animate-pulse" />
-              <p className="text-[9px] text-white/20 font-bold tracking-[0.3em] uppercase">Global_Storefront_Telemetry</p>
-            </div>
+            <h2 className="text-3xl font-black text-white tracking-tight uppercase">Shop Operations</h2>
+            <p className="text-[10px] text-white/20 font-bold tracking-[0.3em] uppercase mt-1">Manage global storefront behavior</p>
           </div>
         </div>
 
@@ -100,143 +94,116 @@ export function ShopControlPanel() {
           onClick={handleSave}
           disabled={isSaving}
           className={`
-            relative group flex items-center gap-4 px-10 py-5 font-black text-[11px] tracking-[0.4em] uppercase transition-all duration-700 overflow-hidden
+            flex items-center gap-4 px-10 py-5 rounded-full font-black text-[11px] tracking-[0.2em] uppercase transition-all duration-300
             ${saveStatus === 'success' 
-              ? 'bg-emerald-500 text-white border border-emerald-400' 
+              ? 'bg-emerald-500 text-white' 
               : 'bg-white text-black hover:bg-white/90 active:scale-95'}
           `}
         >
-          <div className="absolute inset-0 bg-black/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-700" />
-          <span className="relative z-10 flex items-center gap-3">
-            {isSaving ? <Loader2 className="animate-spin" size={14} /> : saveStatus === 'success' ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-            {saveStatus === 'success' ? 'Synchronized' : 'Commit_Changes'}
-          </span>
+          {isSaving ? <Loader2 className="animate-spin" size={14} /> : saveStatus === 'success' ? <CheckCircle2 size={14} /> : <Save size={14} />}
+          {saveStatus === 'success' ? 'Changes Saved' : 'Save Changes'}
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         
-        {/* ─── MASTER CONTROL ────────────────────────────────── */}
+        {/* Visibility Control */}
         <div className="space-y-12">
-          <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-[1px] w-8 bg-white/20" />
-              <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Master_Control</h3>
-            </div>
+          <section className="space-y-8">
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] px-2">Site Visibility</h3>
             
             <div 
               onClick={() => handleToggle('shopEnabled')}
-              className={`p-8 border cursor-pointer transition-all duration-700 relative overflow-hidden group ${formData.shopEnabled ? 'bg-white/[0.03] border-white/10' : 'bg-red-500/[0.02] border-red-500/10'}`}
+              className={`p-10 rounded-[2rem] border cursor-pointer transition-all duration-500 group relative overflow-hidden ${formData.shopEnabled ? 'bg-white/[0.02] border-white/10' : 'bg-red-500/[0.02] border-red-500/10'}`}
             >
-              <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                <Settings2 size={48} />
-              </div>
-
               <div className="flex items-center justify-between relative z-10">
                 <div className="space-y-2">
-                  <p className="text-sm font-black text-white uppercase tracking-widest">Storefront_Visibility</p>
-                  <p className="text-[9px] text-white/30 font-bold tracking-[0.2em] leading-relaxed uppercase max-w-[250px]">
-                    {formData.shopEnabled ? 'Active: All customers have access' : 'Offline: Site-wide shop gate active'}
+                  <p className="text-base font-black text-white uppercase tracking-tight">Active Storefront</p>
+                  <p className="text-[11px] text-white/30 font-medium tracking-wide leading-relaxed uppercase">
+                    {formData.shopEnabled ? 'All customers currently have access' : 'Store is hidden from public view'}
                   </p>
                 </div>
-                <div className={`h-8 w-16 rounded-none p-1.5 transition-all duration-700 ${formData.shopEnabled ? 'bg-white' : 'bg-white/10'}`}>
-                  <div className={`h-5 w-5 transition-all duration-700 ${formData.shopEnabled ? 'translate-x-8 bg-black' : 'translate-x-0 bg-white/20'}`} />
+                <div className={`h-8 w-14 rounded-full p-1.5 transition-all duration-500 ${formData.shopEnabled ? 'bg-white' : 'bg-white/10'}`}>
+                  <div className={`h-5 w-5 rounded-full transition-all duration-500 ${formData.shopEnabled ? 'translate-x-6 bg-black' : 'translate-x-0 bg-white/20'}`} />
                 </div>
               </div>
             </div>
           </section>
 
-          {/* ─── DISPLAY LOGIC ────────────────────────────────── */}
-          <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-[1px] w-8 bg-white/20" />
-              <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Display_Logic</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Product Tags */}
+          <section className="space-y-8">
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] px-2">Display Badges</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <ToggleOption 
-                label="Sale_Badges" 
+                label="Sale Badges" 
                 active={formData.showSaleBadge} 
-                icon={<Tag size={14} />} 
+                icon={<Tag size={16} />} 
                 onClick={() => handleToggle('showSaleBadge')}
               />
               <ToggleOption 
-                label="New_Indicators" 
+                label="New Indicators" 
                 active={formData.showNewBadge} 
-                icon={<Bell size={14} />} 
+                icon={<Bell size={16} />} 
                 onClick={() => handleToggle('showNewBadge')}
               />
               <ToggleOption 
-                label="Stock_Telemetry" 
+                label="Stock Counts" 
                 active={formData.showStockBadge} 
-                icon={<Package size={14} />} 
+                icon={<Package size={16} />} 
                 onClick={() => handleToggle('showStockBadge')}
               />
               <ToggleOption 
-                label="Sold_Out_Overlay" 
+                label="Sold Out Overlay" 
                 active={formData.showSoldOutOverlay} 
-                icon={<EyeOff size={14} />} 
+                icon={<EyeOff size={16} />} 
                 onClick={() => handleToggle('showSoldOutOverlay')}
               />
             </div>
           </section>
         </div>
 
-        {/* ─── INTERACTION & CONTENT ─────────────────────────── */}
+        {/* Global Configuration */}
         <div className="space-y-12">
-          <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-[1px] w-8 bg-white/20" />
-              <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Interaction_Settings</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <section className="space-y-8">
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] px-2">Store Features</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <ToggleOption 
-                label="Filter_System" 
+                label="Filter System" 
                 active={formData.enableFilters} 
-                icon={<Layout size={14} />} 
+                icon={<Layout size={16} />} 
                 onClick={() => handleToggle('enableFilters')}
               />
               <ToggleOption 
-                label="Search_Archive" 
+                label="Search Archive" 
                 active={formData.enableSearch} 
-                icon={<SearchIcon size={14} />} 
+                icon={<SearchIcon size={16} />} 
                 onClick={() => handleToggle('enableSearch')}
               />
             </div>
           </section>
 
-          <section className="space-y-8 pt-4">
-            <div className="grid grid-cols-1 gap-8">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Global_Announcement</span>
-                  {!formData.announcementText && <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">Optional</span>}
-                </div>
-                <div className="relative group">
-                  <input 
-                    type="text" 
-                    value={formData.announcementText || ''} 
-                    onChange={(e) => handleInputChange('announcementText', e.target.value)}
-                    placeholder="Enter announcement text..."
-                    className="w-full bg-white/[0.02] border border-white/5 p-6 text-xs font-bold tracking-[0.1em] text-white focus:outline-none focus:border-white/20 transition-all uppercase placeholder:text-white/10"
-                  />
-                  <div className="absolute bottom-0 left-0 h-[1px] bg-white/20 w-0 group-focus-within:w-full transition-all duration-700" />
-                </div>
+          <section className="space-y-8">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] ml-2">Global Announcement</label>
+                <input 
+                  type="text" 
+                  value={formData.announcementText || ''} 
+                  onChange={(e) => handleInputChange('announcementText', e.target.value)}
+                  placeholder="Enter text (e.g. Free Shipping on orders over...)"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-xs font-bold text-white focus:outline-none focus:border-white/40 focus:bg-white/[0.05] transition-all placeholder:text-white/10"
+                />
               </div>
 
-              <div className="space-y-4">
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Featured_Category_Focus</span>
-                <div className="relative group">
-                  <input 
-                    type="text" 
-                    value={formData.featuredCategorySlug || ''} 
-                    onChange={(e) => handleInputChange('featuredCategorySlug', e.target.value)}
-                    placeholder="e.g. tops, outerwear"
-                    className="w-full bg-white/[0.02] border border-white/5 p-6 text-xs font-bold tracking-[0.1em] text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-white/10"
-                  />
-                  <div className="absolute bottom-0 left-0 h-[1px] bg-white/20 w-0 group-focus-within:w-full transition-all duration-700" />
-                </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] ml-2">Featured Category Focus</label>
+                <input 
+                  type="text" 
+                  value={formData.featuredCategorySlug || ''} 
+                  onChange={(e) => handleInputChange('featuredCategorySlug', e.target.value)}
+                  placeholder="Slug (e.g. tops, outerwear)"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-xs font-bold text-white focus:outline-none focus:border-white/40 focus:bg-white/[0.05] transition-all placeholder:text-white/10"
+                />
               </div>
             </div>
           </section>
@@ -244,9 +211,9 @@ export function ShopControlPanel() {
       </div>
       
       {saveStatus === 'error' && (
-        <div className="flex items-center gap-4 p-6 bg-red-500/5 border border-red-500/10 text-red-400 font-bold text-[10px] tracking-[0.3em] uppercase animate-in slide-in-from-top duration-500">
+        <div className="flex items-center gap-4 p-6 bg-red-500/5 border border-red-500/10 rounded-3xl text-red-400 font-bold text-[10px] tracking-[0.3em] uppercase animate-in slide-in-from-top duration-500">
           <AlertCircle size={16} />
-          Protocol_Error: System failed to synchronize storefront settings.
+          Error: Failed to update storefront settings.
         </div>
       )}
     </div>
@@ -257,17 +224,17 @@ function ToggleOption({ label, active, icon, onClick }: { label: string; active:
   return (
     <div 
       onClick={onClick}
-      className={`p-6 border cursor-pointer flex items-center justify-between transition-all duration-500 group relative overflow-hidden ${active ? 'bg-white/[0.05] border-white/20' : 'bg-transparent border-white/5 opacity-40 hover:opacity-100'}`}
+      className={`p-8 rounded-3xl border cursor-pointer flex items-center justify-between transition-all duration-300 group relative ${active ? 'bg-white/[0.04] border-white/20' : 'bg-transparent border-white/5 opacity-50 hover:opacity-100'}`}
     >
       <div className="flex items-center gap-4 relative z-10">
-        <div className={`transition-all duration-500 ${active ? 'text-white scale-110' : 'text-white/20 scale-100'}`}>
+        <div className={`transition-all duration-300 ${active ? 'text-white' : 'text-white/20'}`}>
           {icon}
         </div>
-        <span className={`text-[11px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${active ? 'text-white' : 'text-white/30'}`}>
+        <span className={`text-[11px] font-black tracking-[0.2em] uppercase transition-colors duration-300 ${active ? 'text-white' : 'text-white/30'}`}>
           {label}
         </span>
       </div>
-      <div className={`h-1 w-1 rounded-full transition-all duration-700 ${active ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.5)]' : 'bg-white/10'}`} />
+      <div className={`h-1.5 w-1.5 rounded-full transition-all duration-500 ${active ? 'bg-white' : 'bg-white/10'}`} />
     </div>
   )
 }
