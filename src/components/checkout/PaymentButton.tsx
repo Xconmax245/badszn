@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useCartStore } from "@/stores/cartStore"
 import { Loader2 } from "lucide-react"
 import { trackEvent } from "@/lib/events"
+import ValidationModal from "./ValidationModal"
 
 interface PaymentButtonProps {
   form: any
@@ -11,6 +12,7 @@ interface PaymentButtonProps {
 
 export default function PaymentButton({ form }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false)
+  const [modal, setModal] = useState({ isOpen: false, message: "" })
   const { items, subtotal } = useCartStore()
   
   const handleCheckout = async () => {
@@ -18,7 +20,10 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
     
     // Validation
     if (!form.fullName || !form.email || !form.line1 || !form.city) {
-      alert("Please complete the shipping address first")
+      setModal({ 
+        isOpen: true, 
+        message: "Shipping parameters are incomplete. Please finalize your identity and delivery location." 
+      })
       return
     }
 
@@ -61,26 +66,37 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
       }
     } catch (error: any) {
       console.error("Checkout failed:", error)
-      alert(error.message || "Payment initialization failed. Please try again.")
+      setModal({ 
+        isOpen: true, 
+        message: error.message || "Payment initialization failed. Please try again." 
+      })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <button
-      onClick={handleCheckout}
-      disabled={loading || items.length === 0}
-      className="w-full bg-white text-black py-6 rounded-full text-[13px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(255,255,255,0.15)]"
-    >
-      {loading ? (
-        <>
-          <Loader2 className="w-4 h-4 animate-spin" />
-          Processing...
-        </>
-      ) : (
-        "INITIALIZE PAYMENT"
-      )}
-    </button>
+    <>
+      <button
+        onClick={handleCheckout}
+        disabled={loading || items.length === 0}
+        className="w-full bg-white text-black py-6 rounded-full text-[13px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(255,255,255,0.15)]"
+      >
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          "INITIALIZE PAYMENT"
+        )}
+      </button>
+
+      <ValidationModal 
+        isOpen={modal.isOpen} 
+        onClose={() => setModal({ ...modal, isOpen: false })} 
+        message={modal.message} 
+      />
+    </>
   )
 }

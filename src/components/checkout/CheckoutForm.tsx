@@ -8,6 +8,19 @@ interface CheckoutFormProps {
   setForm: (form: any) => void
 }
 
+const Input = ({ name, placeholder, value, onChange, type = "text" }: { name: string, placeholder: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string }) => (
+  <div className="relative group">
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
+    />
+  </div>
+)
+
 export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
   const [savedAddresses, setSavedAddresses]   = useState<any[]>([])
   const [selectedAddress, setSelectedAddress] = useState<any>(null)
@@ -44,19 +57,6 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
-
-  const Input = ({ name, placeholder, type = "text" }: { name: string, placeholder: string, type?: string }) => (
-    <div className="relative group">
-      <input
-        type={type}
-        name={name}
-        value={form[name] || ""}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
-      />
-    </div>
-  )
 
   return (
     <motion.div 
@@ -106,9 +106,9 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
           Contact Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input name="fullName" placeholder="Full Name" />
-          <Input name="email" placeholder="Email Address" type="email" />
-          <Input name="phone" placeholder="Phone Number" type="tel" />
+          <Input name="fullName" placeholder="Full Name" value={form.fullName} onChange={handleChange} />
+          <Input name="email" placeholder="Email Address" type="email" value={form.email} onChange={handleChange} />
+          <Input name="phone" placeholder="Phone Number" type="tel" value={form.phone} onChange={handleChange} />
         </div>
       </section>
 
@@ -118,10 +118,10 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
           Shipping Address
         </h3>
         <div className="grid grid-cols-1 gap-4">
-          <Input name="line1" placeholder="Street Address" />
+          <Input name="line1" placeholder="Street Address" value={form.line1} onChange={handleChange} />
           <div className="grid grid-cols-2 gap-4">
-            <Input name="city" placeholder="City" />
-            <Input name="state" placeholder="State" />
+            <Input name="city" placeholder="City" value={form.city} onChange={handleChange} />
+            <Input name="state" placeholder="State" value={form.state} onChange={handleChange} />
           </div>
         </div>
 
