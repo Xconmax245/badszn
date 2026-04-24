@@ -5,7 +5,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useCartStore } from '@/stores/cartStore'
 import CouponField from './CouponField'
-import FreeShippingBar from './FreeShippingBar'
+import CouponField from './CouponField'
 
 function CheckoutButton() {
   const router   = useRouter()
@@ -52,7 +52,6 @@ export default function CartSummary() {
     <div className="flex flex-col gap-6 sticky top-28 bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6">
       <h3 className="text-sm font-black uppercase tracking-widest text-white/60">Order Summary</h3>
 
-      <FreeShippingBar subtotal={sub} />
       <CouponField />
 
       <div className="flex flex-col gap-3 py-4 border-y border-white/[0.06]">

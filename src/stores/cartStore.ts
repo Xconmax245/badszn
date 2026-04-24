@@ -22,7 +22,6 @@ export interface CouponState {
   isValid:        boolean
 }
 
-const FREE_SHIPPING_THRESHOLD = 30000
 
 interface CartStore {
   items:      CartItem[]
@@ -130,7 +129,11 @@ export const useCartStore = create<CartStore>()(
         return 0
       },
 
-      shipping: () => get().subtotal() >= FREE_SHIPPING_THRESHOLD ? 0 : 2500,
+      shipping: () => {
+        const { coupon } = get()
+        if (coupon?.isValid && coupon.type === 'FREE_SHIPPING') return 0
+        return 3000 // Standard Shipping Rate
+      },
 
       total: () => {
         const sub      = get().subtotal()

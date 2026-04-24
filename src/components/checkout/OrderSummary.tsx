@@ -10,7 +10,7 @@ interface OrderSummaryProps {
 }
 
 export default function OrderSummary({ form }: OrderSummaryProps) {
-  const { items, subtotal } = useCartStore()
+  const { items, subtotal, shipping, total } = useCartStore()
   const totalAmount = subtotal()
 
   return (
@@ -48,11 +48,13 @@ export default function OrderSummary({ form }: OrderSummaryProps) {
         </div>
         <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-white/40">
           <span>Shipping</span>
-          <span className="text-[10px] font-black text-emerald-500/80">FREE_GLOBAL</span>
+          <span className="text-[10px] font-black text-white/60">
+            {shipping() === 0 ? 'FREE' : `₦${shipping().toLocaleString()}`}
+          </span>
         </div>
         <div className="flex justify-between items-center pt-4 border-t border-white/5">
           <span className="text-[12px] font-black uppercase tracking-[0.2em] text-white">Total</span>
-          <span className="text-xl font-black text-white text-aura-glow">₦{totalAmount.toLocaleString()}</span>
+          <span className="text-xl font-black text-white text-aura-glow">₦{total().toLocaleString()}</span>
         </div>
       </div>
 
