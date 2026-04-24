@@ -101,8 +101,8 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       )}
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
-          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">01</span>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">01</span>
           Contact Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -113,8 +113,8 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
-          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">02</span>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">02</span>
           Shipping Address
         </h3>
         <div className="grid grid-cols-1 gap-4">
@@ -147,8 +147,8 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
-          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">03</span>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">03</span>
           Delivery Method
         </h3>
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
@@ -161,8 +161,8 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
-          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">04</span>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">04</span>
           Payment Information
         </h3>
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
