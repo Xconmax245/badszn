@@ -22,7 +22,7 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
     if (!form.fullName || !form.email || !form.line1 || !form.city) {
       setModal({ 
         isOpen: true, 
-        message: "Shipping parameters are incomplete. Please finalize your identity and delivery location." 
+        message: "Please complete your shipping details to proceed with the order." 
       })
       return
     }

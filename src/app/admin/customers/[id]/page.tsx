@@ -44,8 +44,8 @@ export default function CustomerDetailPage() {
 
   if (!customer) return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center space-y-6">
-      <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest">RECORD_NOT_FOUND</p>
-      <Link href="/admin/customers" className="text-white text-xs underline">Return to Registry</Link>
+      <p className="text-white/40 text-[10px] uppercase tracking-widest">Customer Not Found</p>
+      <Link href="/admin/customers" className="text-white text-xs underline">Return to Directory</Link>
     </div>
   )
 
@@ -58,7 +58,7 @@ export default function CustomerDetailPage() {
             className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-colors"
           >
             <ArrowLeft size={14} />
-            BACK_TO_REGISTRY
+            Customer Directory
           </Link>
           <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10">
             <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">UID: {customer.id}</p>
@@ -80,19 +80,19 @@ export default function CustomerDetailPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Total_Spend</p>
+                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Total Spend</p>
                 <p className="text-2xl font-black text-white">₦{Number(customer.totalSpend).toLocaleString()}</p>
               </div>
               <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Total_Orders</p>
+                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Orders</p>
                 <p className="text-2xl font-black text-white">{customer.orders.length}</p>
               </div>
               <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Loyalty_Tier</p>
+                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Loyalty Tier</p>
                 <p className="text-2xl font-black text-emerald-500">{customer.loyaltyTier}</p>
               </div>
               <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Joined_Date</p>
+                <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">Joined Date</p>
                 <p className="text-lg font-black text-white/60">{new Date(customer.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function CustomerDetailPage() {
           <div className="space-y-6">
             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-3">
               <Activity size={12} />
-              LIVE_CART_STATE
+              Current Cart
             </h3>
             <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 min-h-[200px]">
               {customer.cartSession?.items.length > 0 ? (
@@ -133,7 +133,7 @@ export default function CustomerDetailPage() {
           <div className="space-y-8">
             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-3">
               <ShoppingBag size={12} />
-              ORDER_CHRONOLOGY
+              Order History
             </h3>
             <div className="space-y-4">
               {customer.orders.map((order: any) => (
@@ -166,7 +166,7 @@ export default function CustomerDetailPage() {
           <div className="space-y-8">
             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-3">
               <Clock size={12} />
-              ACTIVITY_PROTOCOLS
+              Activity Log
             </h3>
             <div className="space-y-4 font-mono">
               {customer.eventLogs.map((log: any) => (
