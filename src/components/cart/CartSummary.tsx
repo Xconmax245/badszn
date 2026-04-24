@@ -5,7 +5,6 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useCartStore } from '@/stores/cartStore'
 import CouponField from './CouponField'
-import CouponField from './CouponField'
 
 function CheckoutButton() {
   const router   = useRouter()
