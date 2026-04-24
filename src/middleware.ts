@@ -17,6 +17,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Ignore api routes and statics
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|favicon.png).*)",
   ],
 };
