@@ -42,8 +42,16 @@ export async function POST(request: Request) {
 
     // 3. Create Corresponding Customer in Prisma
     try {
-      await prisma.customer.create({
-        data: {
+      // Use upsert-like logic to handle pre-existing Prisma records from failed syncs
+      await prisma.customer.upsert({
+        where: { email },
+        update: {
+          supabaseUid: authData.user.id,
+          firstName,
+          lastName,
+          username
+        },
+        create: {
           email,
           firstName,
           lastName,
@@ -52,7 +60,11 @@ export async function POST(request: Request) {
         }
       })
     } catch (dbError: any) {
-      console.error("Prisma Customer Sync Error:", dbError)
+      console.error("Prisma Customer Sync Error:", {
+        message: dbError.message,
+        code: dbError.code,
+        meta: dbError.meta
+      })
       
       // Rollback: Delete the Supabase user if profile sync fails
       try {
@@ -62,19 +74,21 @@ export async function POST(request: Request) {
         console.error("Rollback critical failure:", rollbackErr)
       }
 
-      // Specific error handling for duplicate fields
+      // Specific error handling for duplicate fields (P2002)
       if (dbError.code === "P2002") {
         const target = dbError.meta?.target || []
-        if (target.includes("username")) {
+        const targetStr = Array.isArray(target) ? target.join(",") : String(target)
+        
+        if (targetStr.includes("username")) {
           return NextResponse.json({ error: "Identity conflict: @username already claimed." }, { status: 409 })
         }
-        if (target.includes("email")) {
-          return NextResponse.json({ error: "Identity conflict: email already registered in database." }, { status: 409 })
+        if (targetStr.includes("email")) {
+          return NextResponse.json({ error: "Identity conflict: email already registered." }, { status: 409 })
         }
       }
 
       return NextResponse.json(
-        { error: "System Sync Failed. Entry aborted for security." },
+        { error: `Sync Failed: ${dbError.message || "Entry aborted for security."}` },
         { status: 500 }
       )
     }
