@@ -115,9 +115,13 @@ export default function LoginForm({ onToggle }: { onToggle?: () => void }) {
             </div>
             <label htmlFor="remember" className="cursor-pointer" data-cursor="hover">Remember</label>
           </div>
-          <button type="button" className="hover:text-white transition-colors" data-cursor="hover">
+          <Link 
+            href="/auth/forgot-password" 
+            className="hover:text-white transition-colors" 
+            data-cursor="hover"
+          >
             Forgot Password?
-          </button>
+          </Link>
         </div>
 
         <button

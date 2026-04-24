@@ -100,8 +100,11 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
         </section>
       )}
 
-      <section>
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 px-2">01 CONTACT INFORMATION</h3>
+      <section className="space-y-8">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
+          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">01</span>
+          Contact Information
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input name="fullName" placeholder="Full Name" />
           <Input name="email" placeholder="Email Address" type="email" />
@@ -109,8 +112,11 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
         </div>
       </section>
 
-      <section>
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8 px-2">02 SHIPPING ADDRESS</h3>
+      <section className="space-y-8">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
+          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">02</span>
+          Shipping Address
+        </h3>
         <div className="grid grid-cols-1 gap-4">
           <Input name="line1" placeholder="Street Address" />
           <div className="grid grid-cols-2 gap-4">
@@ -137,6 +143,40 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
             </div>
             <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] group-hover:text-white/50 transition-colors">Save this address for later</span>
           </label>
+        </div>
+      </section>
+
+      <section className="space-y-8">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
+          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">03</span>
+          Delivery Method
+        </h3>
+        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] font-black text-white uppercase tracking-wider">Standard Shipping</p>
+            <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest">3-5 Business Days</p>
+          </div>
+          <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Free</span>
+        </div>
+      </section>
+
+      <section className="space-y-8">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-2 flex items-center gap-4">
+          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60">04</span>
+          Payment Information
+        </h3>
+        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <svg className="w-5 h-5 text-white/40" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+              </svg>
+            </div>
+            <p className="text-[11px] font-black text-white uppercase tracking-wider">Secure Payment via Paystack</p>
+          </div>
+          <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest leading-relaxed">
+            Card, Transfer, and Bank payment options available. All transactions are secure and encrypted.
+          </p>
         </div>
       </section>
     </motion.div>

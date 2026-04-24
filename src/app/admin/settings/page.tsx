@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { BarChart3, Database, Globe, CreditCard, ShieldCheck, Cpu } from "lucide-react"
+import { BarChart3, Database, Globe, CreditCard, ShieldCheck, Cpu, Activity } from "lucide-react"
 import SiteConfigForm from "@/components/admin/SiteConfigForm"
 import { ShopControlPanel } from "@/components/admin/ShopControlPanel"
 

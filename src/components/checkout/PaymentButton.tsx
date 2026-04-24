@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useCartStore } from "@/stores/cartStore"
 import { Loader2 } from "lucide-react"
+import { trackEvent } from "@/lib/events"
 
 interface PaymentButtonProps {
   form: any
@@ -22,6 +23,11 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
     }
 
     setLoading(true)
+    trackEvent('CHECKOUT', { 
+      amount: subtotal(), 
+      itemCount: items.length,
+      email: form.email 
+    })
 
     try {
       // 1. Create Order and Init Paystack in one go

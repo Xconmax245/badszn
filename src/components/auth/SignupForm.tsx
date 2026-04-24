@@ -4,13 +4,14 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Loader2, Check } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 // Types
 type Step = "EMAIL" | "NAME" | "USERNAME" | "PASSWORD"
 
 export default function SignupForm({ onToggle }: { onToggle?: () => void }) {
   const router = useRouter()
+  const params = useSearchParams()
   const [step, setStep] = useState<Step>("EMAIL")
   const [loading, setLoading] = useState(false)
   const [shake, setShake] = useState(false)
@@ -58,7 +59,14 @@ export default function SignupForm({ onToggle }: { onToggle?: () => void }) {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, firstName, lastName, username }),
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          firstName, 
+          lastName, 
+          username,
+          redirect: params.get("redirect") || "/" 
+        }),
       })
 
       const data = await response.json()
@@ -68,8 +76,10 @@ export default function SignupForm({ onToggle }: { onToggle?: () => void }) {
         return
       }
 
-      // Success - Redirect to homepage
-      router.push("/")
+      // Success - Redirect to verify-email
+      const currentRedirect = params.get("redirect") || "/"
+      const verifyUrl = `/auth/verify-email?redirect=${encodeURIComponent(currentRedirect)}&email=${encodeURIComponent(email)}`
+      router.push(verifyUrl)
     } catch (error: any) {
       console.error("DEBUG: Signup Fetch Failed:", {
         message: error.message,

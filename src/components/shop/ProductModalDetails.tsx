@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ChevronDown, Minus, Plus, Share2, Shirt, User, Star, Droplets, Zap, Check } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCartStore } from '@/stores/cartStore'
+import { trackEvent } from '@/lib/events'
 import { ProductModalToast } from './ProductModalToast'
 import type { Product, ShopSettings } from '@/types/shop'
 
@@ -43,6 +44,7 @@ export function ProductModalDetails({ product, settings, onClose }: Props) {
   const handleAddToBag = () => {
     if (!canAdd || !selectedVar || adding) return
     setAdding(true)
+    trackEvent('ADD_TO_CART', { productId: product.id, size: selectedSize })
     setTimeout(async () => {
       addItem({
         product,
@@ -121,9 +123,20 @@ export function ProductModalDetails({ product, settings, onClose }: Props) {
 
         {/* ── Size Selector ── */}
         {!isSoldOut && (
-          <div className="space-y-3">
-            <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Size</p>
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40">Select Size</p>
+              {selectedSize && (
+                <motion.span 
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-[10px] font-bold text-accent-red uppercase tracking-widest"
+                >
+                  {selectedSize} Selected
+                </motion.span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-3">
               {availableSizes.map(size => {
                 const oos      = !isInStock(size)
                 const selected = selectedSize === size
@@ -133,28 +146,58 @@ export function ProductModalDetails({ product, settings, onClose }: Props) {
                     onClick={() => !oos && setSelectedSize(size)}
                     disabled={oos}
                     className={`
-                      min-w-[56px] h-10 rounded-full text-[11px] font-bold uppercase border transition-all duration-200
+                      relative min-w-[64px] h-12 rounded-xl text-[12px] font-black uppercase transition-all duration-300
                       ${selected
-                        ? 'bg-white text-black border-white'
+                        ? 'bg-white text-black scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
                         : oos
-                          ? 'border-white/5 text-white/15 cursor-not-allowed'
-                          : 'border-white/15 text-white/60 hover:border-white/40'}
+                          ? 'bg-white/[0.02] border border-white/5 text-white/10 cursor-not-allowed'
+                          : 'bg-white/[0.05] border border-white/10 text-white/60 hover:border-white/40 hover:bg-white/[0.08]'}
                     `}
                   >
                     {size}
+                    {oos && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-full h-[1px] bg-white/10 rotate-45" />
+                      </div>
+                    )}
                   </button>
                 )
               })}
             </div>
-            {/* Size feedback */}
-            {selectedSize && !isInStock(selectedSize) && (
-              <p className="text-[10px] text-red-400 font-semibold">This size is sold out</p>
-            )}
-            {selectedSize && isInStock(selectedSize) && selectedStock <= 3 && (
-              <p className="text-[10px] text-amber-400 font-semibold">
-                Only {selectedStock} left in {selectedSize}
-              </p>
-            )}
+            
+            {/* Stock Feedback - More Prominent */}
+            <AnimatePresence mode="wait">
+              {selectedSize && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="pt-2"
+                >
+                  {!isInStock(selectedSize) ? (
+                    <div className="flex items-center gap-2 text-red-500">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">Sold out in this size</p>
+                    </div>
+                  ) : selectedStock <= 3 ? (
+                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+                      <div className="relative">
+                        <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping absolute inset-0" />
+                        <div className="w-2 h-2 rounded-full bg-amber-500 relative" />
+                      </div>
+                      <p className="text-[10px] text-amber-500 font-black uppercase tracking-widest">
+                        Hurry! Only {selectedStock} left in {selectedSize}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-emerald-500/60">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/60" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">Ready to ship in {selectedSize}</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 

@@ -18,7 +18,6 @@ import {
 } from "lucide-react"
 
 import { useUIStore } from "@/stores/uiStore"
-import { useMediaQuery } from "react-responsive"
 import { AnimatePresence } from "framer-motion"
 
 const NAV_ITEMS = [

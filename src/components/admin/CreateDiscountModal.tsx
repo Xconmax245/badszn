@@ -7,7 +7,7 @@ import {
   Plus, 
   Tag, 
   Percent, 
-  Naira, // This is just a placeholder icon if needed, but I'll use text
+  Banknote,
   Calendar,
   Users,
   Loader2,

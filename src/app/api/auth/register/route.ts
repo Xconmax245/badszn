@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma"
 
 export async function POST(request: Request) {
   try {
-    const { email, password, firstName, lastName, username } = await request.json()
+    const { email, password, firstName, lastName, username, redirect = "/" } = await request.json()
+    const { origin } = new URL(request.url)
 
     // 1. Initialize Supabase Server Client
     const supabase = createServerClient()
@@ -15,6 +16,7 @@ export async function POST(request: Request) {
       email,
       password,
       options: {
+        emailRedirectTo: `${origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
         data: {
           full_name: `${firstName} ${lastName}`.trim(),
           first_name: firstName,
@@ -37,17 +39,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // 2.5 Auto-Confirm User via Admin Client
-    try {
-      const adminClient = createAdminClient()
-      const { error: confirmError } = await adminClient.auth.admin.updateUserById(
-        authData.user.id,
-        { email_confirm: true }
-      )
-      if (confirmError) console.error("Auto-confirm error:", confirmError)
-    } catch (adminErr) {
-      console.error("Admin Client Initialization Error:", adminErr)
-    }
 
     // 3. Create Corresponding Customer in Prisma
     try {
@@ -89,9 +80,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ 
-      success: true, 
-      user: authData.user,
-      session: authData.session 
+      success: true,
+      requiresVerification: true,
+      message: "Check your email to confirm your account.",
     })
 
   } catch (error: any) {

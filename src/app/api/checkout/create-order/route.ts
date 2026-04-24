@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         total,
         status: "PENDING",
         paymentStatus: "UNPAID",
-        shippingAddress: shippingAddress ? JSON.stringify(shippingAddress) : null,
+        shippingAddress: shippingAddress || undefined,
         items: {
           create: items.map((item: any) => ({
             productId: item.productId,

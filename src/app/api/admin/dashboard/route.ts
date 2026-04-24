@@ -200,6 +200,9 @@ export async function GET(req: Request) {
       total:     visitorCounts.total,
       today:     visitorCounts.today,
       returning: visitorCounts.returning,
+      conversionRate: visitorCounts.total > 0 
+        ? ((orderCounts.total / visitorCounts.total) * 100).toFixed(2) 
+        : "0.00",
     },
     inventory: {
       status:   criticalStock > 0 ? "Critical" : lowStock > 0 ? "Low" : "Healthy",

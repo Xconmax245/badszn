@@ -19,12 +19,31 @@ function AuthForm() {
   const modeParam = params.get("mode") as Mode | null
   const [mode, setMode] = useState<Mode>(modeParam || "login")
 
+  // Show error from callback if present
+  const urlError = params.get("error")
+  const errorMessages: Record<string, string> = {
+    invalid_link: "This confirmation link is invalid.",
+    expired_link: "This link has expired. Please sign up again.",
+    unexpected:   "Something went wrong. Please try again.",
+  }
+
   return (
     <AuthSplitLayout 
       quote={mode === "login" ? "Welcome Back." : "Join the Archive."} 
       bgImage={mode === "login" ? "/images/photo_5994565660274527448_x.jpg" : "/images/photo_5994565660274527449_x.jpg"}
     >
-      <div className="w-full">
+      <div className="w-full space-y-6">
+        {urlError && errorMessages[urlError] && (
+          <div className="
+            px-4 py-3 rounded-lg
+            bg-red-500/10 border border-red-500/20
+          ">
+            <p className="text-red-400 text-xs tracking-wide">
+              {errorMessages[urlError]}
+            </p>
+          </div>
+        )}
+
         {mode === "login" ? (
           <LoginForm onToggle={() => setMode("signup")} />
         ) : (

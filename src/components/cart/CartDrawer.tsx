@@ -203,12 +203,16 @@ export default function CartDrawer() {
                 <p className="text-[10px] text-white/25 tracking-wide">
                   Shipping & taxes calculated at checkout
                 </p>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Secure Checkout Guaranteed</span>
+                </div>
                 <Link
                   href="/checkout"
                   onClick={closeCart}
-                  className="w-full flex items-center justify-center py-4 rounded-full bg-white text-black text-[11px] font-black tracking-[0.2em] uppercase hover:bg-white/90 transition-all active:scale-[0.98]"
+                  className="w-full flex items-center justify-center py-4 rounded-full bg-white text-black text-[11px] font-black tracking-[0.2em] uppercase hover:bg-white/90 transition-all active:scale-[0.98] shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
                 >
-                  Checkout →
+                  Proceed to Checkout →
                 </Link>
                 <Link
                   href="/cart"

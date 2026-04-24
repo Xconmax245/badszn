@@ -60,8 +60,22 @@ model Customer {
   waitlistEntries WaitlistEntry[]
   savedAddresses  Address[]
   wishlist        Wishlist[]
+  eventLogs       EventLog[]
 
   @@map("customers")
+}
+
+model EventLog {
+  id        String   @id @default(cuid())
+  customerId String?  @map("customer_id")
+  type      String   // VISIT, ADD_TO_CART, CHECKOUT
+  path      String?
+  metadata  Json?
+  timestamp DateTime @default(now())
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@map("event_logs")
 }
 
 enum LoyaltyTier {

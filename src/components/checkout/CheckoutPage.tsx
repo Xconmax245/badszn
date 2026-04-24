@@ -4,6 +4,7 @@ import { useState } from "react"
 import CheckoutForm from "./CheckoutForm"
 import OrderSummary from "./OrderSummary"
 import { motion } from "framer-motion"
+import { TrustBadges } from "../shared/TrustBadges"
 
 export default function CheckoutPage() {
   const [form, setForm] = useState({
@@ -29,6 +30,10 @@ export default function CheckoutPage() {
         <div className="grid lg:grid-cols-[1fr_400px] gap-16 items-start">
           <CheckoutForm form={form} setForm={setForm} />
           <OrderSummary form={form} />
+        </div>
+
+        <div className="mt-24 pt-16 border-t border-white/5">
+          <TrustBadges variant="horizontal" />
         </div>
       </div>
     </div>

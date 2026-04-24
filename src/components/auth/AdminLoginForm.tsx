@@ -69,10 +69,10 @@ export default function AdminLoginForm() {
 
   return (
     <div className="w-full font-mono">
-      <div className="mb-12 flex flex-col items-center justify-center border-b border-red-500/20 pb-8">
-        <Shield className="w-10 h-10 text-red-500 mb-4 opacity-80" />
-        <h2 className="text-xl tracking-[0.3em] uppercase text-red-500 font-bold">Secure Node</h2>
-        <p className="text-zinc-600 text-xs mt-2 tracking-widest uppercase">Admin clearance required</p>
+      <div className="mb-12 flex flex-col items-center justify-center border-b border-red-500/10 pb-8">
+        <Shield className="w-8 h-8 text-red-500 mb-4 opacity-50" />
+        <h2 className="text-[13px] tracking-[0.5em] uppercase text-red-500 font-black">Authorized_Node</h2>
+        <p className="text-zinc-700 text-[9px] mt-2 tracking-[0.3em] uppercase font-bold">Protocol clearance required</p>
       </div>
 
       <form onSubmit={handleSubmit} className="relative space-y-6 max-w-sm mx-auto">
