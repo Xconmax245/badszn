@@ -1,6 +1,7 @@
 import { getOrCreateCustomer } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
+import Link from "next/link"
 
 export default async function OrdersPage() {
   const customer = await getOrCreateCustomer()
@@ -65,9 +66,11 @@ export default async function OrdersPage() {
                       <p className="text-xs font-bold text-white/40">{order.items.length} Units</p>
                     </div>
 
-                    <button className="px-8 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-black hover:text-white border border-white">
-                      View Details
-                    </button>
+                    <Link href={`/account/orders/${order.id}`}>
+                      <button className="px-8 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-black hover:text-white border border-white">
+                        View Details
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>
