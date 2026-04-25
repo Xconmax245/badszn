@@ -6,18 +6,14 @@ export async function notifyUser(orderId: string) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        customer: {
-          include: {
-            user: true
-          }
-        },
+        customer: true,
         items: true
       }
     })
 
     if (!order) return
 
-    const email = order.guestEmail || (order as any).customer?.user?.email
+    const email = order.guestEmail || order.customer?.email
     const status = order.status
 
     console.log(`🔔 Notification Triggered for Order ${order.id} [${status}] to ${email}`)

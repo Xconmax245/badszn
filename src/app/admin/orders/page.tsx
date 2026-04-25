@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import AdminOrdersList from "@/components/admin/AdminOrdersList"
+import AdminOrdersList from "../../../components/admin/AdminOrdersList"
 
 export const dynamic = 'force-dynamic'
 
