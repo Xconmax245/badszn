@@ -93,6 +93,23 @@ export async function POST(request: Request) {
       )
     }
 
+    // 4. Send Verification Email via Resend
+    try {
+      const verifyUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`
+      await fetch(`${origin}/api/email/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: authData.user.email,
+          name: firstName,
+          verifyUrl
+        })
+      })
+    } catch (emailError) {
+      console.error("Verification email failed to send:", emailError)
+      // We don't block registration if email fails, but we log it
+    }
+
     return NextResponse.json({ 
       success: true,
       requiresVerification: true,

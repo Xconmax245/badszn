@@ -1,5 +1,8 @@
 import { prisma } from "./prisma"
 import { sendTelegramMessage } from "./telegram"
+import { resend } from "./resend"
+import { orderConfirmationTemplate } from "./emails/orderConfirmation"
+import { paymentReceivedTemplate } from "./emails/paymentReceived"
 
 export async function notifyUser(orderId: string) {
   try {
@@ -32,9 +35,43 @@ export async function notifyUser(orderId: string) {
       await sendTelegramMessage(adminMessage)
     }
 
-    // 2. Email Notification (Placeholder for Resend/SendGrid)
-    // Here you would integrate your email provider
-    // Example: await sendEmail({ to: email, subject: "Order Update", ... })
+    // 2. Email Notification
+    if (email) {
+      const fromEmail = process.env.EMAIL_FROM || "BAD SZN <no-reply@badszn.shop>"
+      
+      if (status === "PAID") {
+        // Send Order Confirmation
+        const confirmation = orderConfirmationTemplate({
+          name: order.guestFirstName || order.customer?.firstName || undefined,
+          orderNumber: order.orderNumber || order.id.slice(0, 8),
+          items: order.items.map(i => ({
+            name: i.name,
+            quantity: i.quantity,
+            price: Number(i.price)
+          })),
+          total: Number(order.total)
+        })
+
+        await resend.emails.send({
+          from: fromEmail,
+          to: email,
+          subject: confirmation.subject,
+          html: confirmation.html,
+        }).catch(err => console.error("Resend Order Confirm Error:", err))
+
+        // Send Payment Received (Separate as requested)
+        const payment = paymentReceivedTemplate({
+          orderNumber: order.orderNumber || order.id.slice(0, 8)
+        })
+
+        await resend.emails.send({
+          from: fromEmail,
+          to: email,
+          subject: payment.subject,
+          html: payment.html,
+        }).catch(err => console.error("Resend Payment Received Error:", err))
+      }
+    }
 
   } catch (error) {
     console.error("Notification System Error:", error)
