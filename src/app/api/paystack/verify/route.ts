@@ -12,11 +12,24 @@ export async function GET(req: Request) {
     }
 
     // 1. Double check with Paystack directly (for immediate feedback)
+    const PAYSTACK_SECRET = (process.env.PAYSTACK_SECRET_KEY || "").trim().replace(/^["']|["']$/g, "")
+    
+    if (!PAYSTACK_SECRET) {
+      console.error("❌ Verify API Error: PAYSTACK_SECRET_KEY missing")
+      return NextResponse.json({ error: "Configuration error" }, { status: 500 })
+    }
+
+    console.log("🔍 Verifying Payment:", { 
+      reference,
+      key_prefix: PAYSTACK_SECRET.substring(0, 7),
+      key_suffix: PAYSTACK_SECRET.slice(-4)
+    })
+
     const paystackRes = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${PAYSTACK_SECRET}`,
         },
       }
     )

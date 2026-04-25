@@ -4,8 +4,8 @@ export async function initializePayment({
   email,
   amount,
   reference,
-  callback_url,
   metadata,
+  callback_url
 }: {
   email: string
   amount: number // in kobo
@@ -13,8 +13,16 @@ export async function initializePayment({
   callback_url: string
   metadata?: any
 }) {
+  console.log("💳 Paystack Init Attempt:", {
+    email,
+    amount,
+    key_prefix: PAYSTACK_SECRET.substring(0, 7),
+    key_suffix: PAYSTACK_SECRET.slice(-4),
+    key_length: PAYSTACK_SECRET.length
+  })
+
   if (!PAYSTACK_SECRET) {
-    throw new Error("PAYSTACK_SECRET_KEY is not configured")
+    throw new Error("PAYSTACK_SECRET_KEY is missing from environment variables")
   }
 
   const res = await fetch("https://api.paystack.co/transaction/initialize", {
