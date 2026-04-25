@@ -1,4 +1,4 @@
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!
+const PAYSTACK_SECRET = (process.env.PAYSTACK_SECRET_KEY || "").trim().replace(/^["']|["']$/g, "")
 
 export async function initializePayment({
   email,

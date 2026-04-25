@@ -66,23 +66,27 @@ const CouponInput = () => {
 
   if (coupon?.isValid) {
     return (
-      <div className="flex items-center justify-between p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex items-center justify-between p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 shadow-[0_10px_30px_rgba(16,185,129,0.05)]"
+      >
         <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-            <Tag size={14} />
+          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+            <Check size={18} />
           </div>
           <div>
             <p className="text-[13px] font-semibold text-white tracking-tight">{coupon.code}</p>
-            <p className="text-[11px] text-emerald-500 font-medium">Discount Applied</p>
+            <p className="text-[11px] text-emerald-500 font-medium">Discount Active — Applied Successfully</p>
           </div>
         </div>
         <button 
           onClick={removeCoupon}
-          className="w-8 h-8 flex items-center justify-center text-white/20 hover:text-white transition-colors"
+          className="w-10 h-10 flex items-center justify-center text-white/20 hover:text-white/60 transition-colors bg-white/5 rounded-full hover:bg-white/10"
         >
-          <X size={14} />
+          <X size={16} />
         </button>
-      </div>
+      </motion.div>
     )
   }
 
@@ -93,17 +97,20 @@ const CouponInput = () => {
           <input
             type="text"
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onChange={(e) => {
+              setCode(e.target.value.toUpperCase())
+              if (error) setError("")
+            }}
             placeholder="Enter Code"
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[13px] font-medium text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
+            className={`w-full bg-white/[0.03] border ${error ? 'border-red-500/50' : 'border-white/10'} rounded-2xl py-5 px-8 text-[13px] font-medium text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none`}
           />
         </div>
         <button
           onClick={handleApply}
           disabled={loading || !code}
-          className="px-8 rounded-2xl bg-white text-black text-[12px] font-semibold hover:bg-white/90 transition-all disabled:opacity-20 active:scale-95"
+          className="px-10 rounded-2xl bg-white text-black text-[12px] font-semibold hover:bg-white/90 transition-all disabled:opacity-20 active:scale-95 flex items-center justify-center min-w-[120px]"
         >
-          {loading ? <Loader2 size={14} className="animate-spin" /> : "Apply"}
+          {loading ? <Loader2 size={16} className="animate-spin" /> : "Apply"}
         </button>
       </div>
       <AnimatePresence>
@@ -112,9 +119,9 @@ const CouponInput = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="text-[11px] font-medium text-red-500 ml-4"
+            className="text-[11px] font-medium text-red-500 ml-4 flex items-center gap-2"
           >
-            {error}
+            <X size={12} /> {error}
           </motion.p>
         )}
       </AnimatePresence>
