@@ -29,25 +29,25 @@ export default function OrderConfirmationPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 italic"
+            className="text-[12px] font-medium tracking-[0.04em] text-white/30"
           >
-            Mission_Accomplished
+            Order Received
           </motion.p>
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]"
+            className="text-4xl md:text-5xl font-semibold text-white tracking-tight leading-[1.1]"
           >
-            Order <br/> <span className="text-white/40">Secured.</span>
+            Your order <br/> is confirmed
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-white/40 text-[11px] font-bold uppercase tracking-widest max-w-[320px] mx-auto leading-relaxed"
+            className="text-white/40 text-[14px] leading-relaxed max-w-[320px] mx-auto"
           >
-            Your procurement request has been finalized. We are currently preparing your assets for deployment.
+            We've received your request. Our team is currently preparing your items for delivery.
           </motion.p>
         </div>
 
@@ -58,15 +58,15 @@ export default function OrderConfirmationPage() {
           transition={{ delay: 0.5 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col items-center gap-3">
+          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col items-center gap-2">
             <Mail className="w-5 h-5 text-white/20" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Email Confirmation</p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-white/20">Sent to your registered inbox</p>
+            <p className="text-[12px] font-semibold text-white/60">Email Confirmation</p>
+            <p className="text-[12px] text-white/20">Sent to your inbox</p>
           </div>
-          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col items-center gap-3">
+          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col items-center gap-2">
             <Package className="w-5 h-5 text-white/20" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Tracking Link</p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-white/20">Updated in 24-48 hours</p>
+            <p className="text-[12px] font-semibold text-white/60">Tracking Details</p>
+            <p className="text-[12px] text-white/20">Updated in 24-48 hours</p>
           </div>
         </motion.div>
 
@@ -79,7 +79,7 @@ export default function OrderConfirmationPage() {
         >
           <button 
             onClick={() => router.push('/shop')}
-            className="group inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.3em] text-white hover:text-white/70 transition-all"
+            className="group inline-flex items-center gap-4 text-[13px] font-semibold text-white hover:text-white/70 transition-all"
           >
             Continue Browsing 
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />

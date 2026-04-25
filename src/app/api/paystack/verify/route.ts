@@ -38,11 +38,34 @@ export async function GET(req: Request) {
       return NextResponse.json({ status: orderByRef?.status ?? "PENDING" })
     }
 
-    // 4. Check our database to see if the webhook has updated the status to PAID
-    const order = await prisma.order.findUnique({
+    // 4. Check our database
+    let order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { status: true }
+      select: { id: true, status: true, orderNumber: true }
     })
+
+    // ⚡ FALLBACK: If Paystack says success BUT DB is not PAID yet
+    // This handles webhook delays or failures gracefully
+    if (order && order.status !== "PAID") {
+      console.log(`Fallback Sync: Updating order ${order.id} to PAID via Verify API`)
+      
+      order = await prisma.order.update({
+        where: { id: orderId },
+        data: { 
+          status: "PAID",
+          paymentStatus: "PAID",
+          paidAt: new Date()
+        }
+      })
+
+      // Increment coupon if needed
+      if ((order as any).discountCodeId) {
+        await prisma.discountCode.update({
+          where: { id: (order as any).discountCodeId },
+          data: { timesUsed: { increment: 1 } }
+        }).catch(() => {})
+      }
+    }
 
     return NextResponse.json({
       status: order?.status ?? "PENDING",

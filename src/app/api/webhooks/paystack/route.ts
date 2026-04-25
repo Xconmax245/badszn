@@ -28,10 +28,21 @@ export async function POST(req: Request) {
     }
 
     // 2. Handle Event
-    const event = body
+    const event = JSON.parse(bodyText)
+    console.log("🔔 Paystack Webhook Received:", { 
+      event: event.event, 
+      reference: event.data?.reference,
+      status: event.data?.status 
+    })
 
     if (event.event === "charge.success") {
-      const orderId = event.data.metadata?.orderId || event.data.reference
+      const orderId = event.data.metadata?.orderId
+      console.log("📦 Processing Order ID:", orderId)
+      
+      if (!orderId) {
+        console.error("❌ Webhook Error: No orderId in metadata")
+        return NextResponse.json({ error: "No orderId" }, { status: 400 })
+      }
 
       // Use a transaction to ensure atomic update and handle potential race conditions
       const order = await prisma.order.update({

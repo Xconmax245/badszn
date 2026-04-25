@@ -20,7 +20,7 @@ export default function OrderSummary({ form }: OrderSummaryProps) {
       animate={{ opacity: 1, x: 0 }}
       className="sticky top-32 glass-aura rounded-[2.5rem] p-8 md:p-10 border border-white/10"
     >
-      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-10">03 ORDER SUMMARY</h3>
+      <h3 className="text-[12px] font-semibold text-white/30 mb-10">Order Summary</h3>
       
       <div className="space-y-6 mb-10 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
         {items.map((item) => (
@@ -34,34 +34,34 @@ export default function OrderSummary({ form }: OrderSummaryProps) {
               />
             </div>
             <div className="flex-1 min-w-0 py-1">
-              <p className="text-[11px] font-black text-white uppercase truncate tracking-tight">{item.name}</p>
-              <p className="text-[9px] text-white/30 uppercase font-bold mt-1 tracking-widest">{item.size} • QTY {item.quantity}</p>
-              <p className="text-[11px] font-bold text-white/60 mt-2">₦{(item.price * item.quantity).toLocaleString()}</p>
+              <p className="text-[13px] font-semibold text-white truncate tracking-tight">{item.name}</p>
+              <p className="text-[11px] text-white/30 font-medium mt-1">{item.size} • Qty {item.quantity}</p>
+              <p className="text-[12px] font-semibold text-white/60 mt-2">₦{(item.price * item.quantity).toLocaleString()}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div className="space-y-4 border-t border-white/5 pt-8 mb-10">
-        <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-white/40">
+        <div className="flex justify-between items-center text-[13px] font-medium text-white/40">
           <span>Subtotal</span>
-          <span className="font-bold text-white/60">₦{totalAmount.toLocaleString()}</span>
+          <span className="text-white/60">₦{totalAmount.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-white/40">
+        <div className="flex justify-between items-center text-[13px] font-medium text-white/40">
           <span>Shipping</span>
-          <span className="text-[10px] font-black text-white/60">
-            {shipping() === 0 ? 'FREE' : `₦${shipping().toLocaleString()}`}
+          <span className="text-white/60">
+            {shipping() === 0 ? 'Free' : `₦${shipping().toLocaleString()}`}
           </span>
         </div>
         {currentDiscount > 0 && (
-          <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-emerald-500/80">
+          <div className="flex justify-between items-center text-[13px] font-semibold text-emerald-500/80">
             <span>Discount</span>
-            <span className="text-[10px] font-black">- ₦{currentDiscount.toLocaleString()}</span>
+            <span>- ₦{currentDiscount.toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between items-center pt-4 border-t border-white/5">
-          <span className="text-[12px] font-black uppercase tracking-[0.2em] text-white">Total</span>
-          <span className="text-xl font-black text-white text-aura-glow">₦{total().toLocaleString()}</span>
+          <span className="text-[14px] font-semibold text-white">Total</span>
+          <span className="text-xl font-bold text-white text-aura-glow">₦{total().toLocaleString()}</span>
         </div>
       </div>
 
@@ -71,24 +71,24 @@ export default function OrderSummary({ form }: OrderSummaryProps) {
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
             </svg>
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/80">Orders processed within 24hrs</p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-white/20 mt-0.5">Rapid Fulfillment Protocol</p>
+            <p className="text-[12px] font-semibold text-white/80">Fast Processing</p>
+            <p className="text-[11px] font-medium text-white/20">Orders fulfilled within 24 hours</p>
           </div>
         </div>
         
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/80">Secure Checkout</p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-white/20 mt-0.5">Paystack Encrypted Gateway</p>
+            <p className="text-[12px] font-semibold text-white/80">Secure Checkout</p>
+            <p className="text-[11px] font-medium text-white/20">Verified Paystack Gateway</p>
           </div>
         </div>
       </div>

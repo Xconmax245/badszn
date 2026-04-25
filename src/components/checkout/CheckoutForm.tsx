@@ -18,7 +18,7 @@ const Input = ({ name, placeholder, value, onChange, type = "text" }: { name: st
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
+      className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[13px] font-medium text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
     />
   </div>
 )
@@ -72,8 +72,8 @@ const CouponInput = () => {
             <Tag size={14} />
           </div>
           <div>
-            <p className="text-[11px] font-black text-white uppercase tracking-wider">{coupon.code}</p>
-            <p className="text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Active Discount Applied</p>
+            <p className="text-[13px] font-semibold text-white tracking-tight">{coupon.code}</p>
+            <p className="text-[11px] text-emerald-500 font-medium">Discount Applied</p>
           </div>
         </div>
         <button 
@@ -95,13 +95,13 @@ const CouponInput = () => {
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Enter Code"
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[13px] font-medium text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
           />
         </div>
         <button
           onClick={handleApply}
           disabled={loading || !code}
-          className="px-8 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-white/90 transition-all disabled:opacity-20 active:scale-95"
+          className="px-8 rounded-2xl bg-white text-black text-[12px] font-semibold hover:bg-white/90 transition-all disabled:opacity-20 active:scale-95"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : "Apply"}
         </button>
@@ -112,7 +112,7 @@ const CouponInput = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="text-[9px] font-bold text-red-500 uppercase tracking-widest ml-4"
+            className="text-[11px] font-medium text-red-500 ml-4"
           >
             {error}
           </motion.p>
@@ -168,7 +168,7 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       {/* Address Selector */}
       {savedAddresses.length > 0 && (
         <section className="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-6">Saved_Addresses</h3>
+          <h3 className="text-[12px] font-semibold text-white/30 mb-6">Saved Addresses</h3>
           <div className="flex flex-col gap-3">
             {savedAddresses.map(addr => (
               <button
@@ -181,12 +181,12 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
                 }`}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <p className="text-[12px] font-black text-white uppercase tracking-tight">{addr.fullName}</p>
+                  <p className="text-[14px] font-semibold text-white tracking-tight">{addr.fullName}</p>
                   {addr.isDefault && (
-                    <span className="text-[8px] font-black bg-white/10 text-white/40 px-2 py-1 rounded-full uppercase tracking-widest">Default</span>
+                    <span className="text-[10px] font-medium bg-white/10 text-white/40 px-3 py-1 rounded-full">Default</span>
                   )}
                 </div>
-                <p className="text-[11px] text-white/30 uppercase font-bold tracking-widest leading-relaxed">
+                <p className="text-[12px] text-white/30 font-medium leading-relaxed">
                   {addr.line1}, {addr.city}, {addr.state}
                 </p>
               </button>
@@ -194,7 +194,7 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
           </div>
           <button 
             onClick={() => setSelectedAddress(null)}
-            className="mt-6 text-[9px] font-black text-white/40 uppercase tracking-[0.3em] hover:text-white transition-colors"
+            className="mt-6 text-[11px] font-semibold text-white/40 hover:text-white transition-colors"
           >
             + Add New Address
           </button>
@@ -202,8 +202,8 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       )}
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
-          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">01</span>
+        <h3 className="text-[12px] font-semibold text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[12px]">01</span>
           Contact Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -214,8 +214,8 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
-          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">02</span>
+        <h3 className="text-[12px] font-semibold text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[12px]">02</span>
           Shipping Address
         </h3>
         <div className="grid grid-cols-1 gap-4">
@@ -242,36 +242,36 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
                 </svg>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] group-hover:text-white/50 transition-colors">Save this address for later</span>
+            <span className="text-[12px] font-medium text-white/30 group-hover:text-white/50 transition-colors">Save this address for later</span>
           </label>
         </div>
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
-          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">03</span>
+        <h3 className="text-[12px] font-semibold text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[12px]">03</span>
           Delivery Method
         </h3>
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-[11px] font-black text-white uppercase tracking-wider">Standard Shipping</p>
-            <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest">3-5 Business Days</p>
+            <p className="text-[13px] font-semibold text-white tracking-tight">Standard Shipping</p>
+            <p className="text-[11px] text-white/30 font-medium">3-5 Business Days</p>
           </div>
-          <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Calculated at Summary</span>
+          <span className="text-[12px] font-semibold text-white/60">Calculated at Summary</span>
         </div>
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
-          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">04</span>
+        <h3 className="text-[12px] font-semibold text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[12px]">04</span>
           Discount Code
         </h3>
         <CouponInput />
       </section>
 
       <section className="space-y-8">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
-          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">05</span>
+        <h3 className="text-[12px] font-semibold text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[12px]">05</span>
           Payment Information
         </h3>
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
@@ -281,9 +281,9 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
                 <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
               </svg>
             </div>
-            <p className="text-[11px] font-black text-white uppercase tracking-wider">Secure Payment via Paystack</p>
+            <p className="text-[13px] font-semibold text-white tracking-tight">Secure Payment via Paystack</p>
           </div>
-          <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest leading-relaxed">
+          <p className="text-[12px] text-white/30 font-medium leading-relaxed">
             Card, Transfer, and Bank payment options available. All transactions are secure and encrypted.
           </p>
         </div>
