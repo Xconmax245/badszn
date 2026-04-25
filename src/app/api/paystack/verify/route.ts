@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { OrderStatus, PaymentStatus } from "@prisma/client"
 
 export async function GET(req: Request) {
   try {
@@ -46,14 +47,14 @@ export async function GET(req: Request) {
 
     // ⚡ FALLBACK: If Paystack says success BUT DB is not PAID yet
     // This handles webhook delays or failures gracefully
-    if (order && order.status !== "PAID") {
+    if (order && order.status !== OrderStatus.PAID) {
       console.log(`Fallback Sync: Updating order ${order.id} to PAID via Verify API`)
       
       order = await prisma.order.update({
         where: { id: orderId },
         data: { 
-          status: "PAID",
-          paymentStatus: "PAID",
+          status: OrderStatus.PAID,
+          paymentStatus: PaymentStatus.PAID,
           paidAt: new Date()
         }
       })

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { sendTelegramMessage } from "@/lib/telegram"
 import { formatOrderMessage } from "@/lib/formatOrder"
 import crypto from "crypto"
+import { OrderStatus, PaymentStatus } from "@prisma/client"
 
 export async function POST(req: Request) {
   try {
@@ -48,8 +49,8 @@ export async function POST(req: Request) {
       const order = await prisma.order.update({
         where: { id: orderId },
         data: { 
-          paymentStatus: "PAID",
-          status: "PAID", // Added to enum as requested
+          status: OrderStatus.PAID,
+          paymentStatus: PaymentStatus.PAID,
           paidAt: new Date(),
           paystackData: event.data,
         },
