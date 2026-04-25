@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { OrderStatus, PaymentStatus } from "@prisma/client"
+import { OrderStatus, PaymentStatus } from "@prisma/client" // Re-syncing types
 
 export async function GET(req: Request) {
   try {

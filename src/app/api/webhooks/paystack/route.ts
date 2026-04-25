@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { sendTelegramMessage } from "@/lib/telegram"
 import { formatOrderMessage } from "@/lib/formatOrder"
 import crypto from "crypto"
-import { OrderStatus, PaymentStatus } from "@prisma/client"
+import { OrderStatus, PaymentStatus } from "@prisma/client" // Re-syncing types
 
 export async function POST(req: Request) {
   try {
