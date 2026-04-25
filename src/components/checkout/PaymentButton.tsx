@@ -13,7 +13,7 @@ interface PaymentButtonProps {
 export default function PaymentButton({ form }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false)
   const [modal, setModal] = useState({ isOpen: false, message: "" })
-  const { items, subtotal, total, discountAmount, coupon } = useCartStore()
+  const { items, subtotal, total, shipping, discountAmount, coupon } = useCartStore()
   
   const handleCheckout = async () => {
     if (items.length === 0) return
@@ -54,6 +54,7 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
           total: total(),
           discountAmount: discountAmount(),
           discountCodeId: coupon?.id,
+          shippingCost: shipping(),
           shippingAddress: form,
         })
       })

@@ -9,8 +9,10 @@ export async function POST(req: Request) {
 
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { items, subtotal, total, shippingAddress, discountCodeId, discountAmount } = await req.json()
+    const { items, subtotal, total, shippingCost, shippingAddress, discountCodeId, discountAmount } = await req.json()
     const orderNumber = `BS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+
+    console.log("Creating order:", { orderNumber, total, subtotal, shippingCost })
 
     const customer = await prisma.customer.findUnique({
       where: { supabaseUid: user.id }
@@ -24,7 +26,7 @@ export async function POST(req: Request) {
         subtotal,
         discountAmount: discountAmount || 0,
         discountCodeId: discountCodeId || null,
-        shippingCost: shippingAddress?.shippingCost || 0,
+        shippingCost: shippingCost || 0,
         total,
         status: "PENDING",
         paymentStatus: "UNPAID",
@@ -38,25 +40,35 @@ export async function POST(req: Request) {
             price: item.price,
             quantity: item.quantity,
             total: item.price * item.quantity,
-            imageUrl: item.imageUrl
+            imageUrl: item.imageUrl || item.image || null
           }))
         }
       }
     })
 
+    console.log("Order created in DB:", order.id)
+
     // ⚡ 2. Initialize Paystack
     const { initializePayment } = await import("@/lib/paystack")
-    const paymentUrl = await initializePayment({
-      email: user.email!,
-      amount: Math.round(total * 100), // convert to kobo
-      reference: order.id,
-      metadata: { orderId: order.id }, // Add metadata for webhook
-      callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?ref=${order.id}`,
-    })
+    try {
+      const paymentUrl = await initializePayment({
+        email: user.email!,
+        amount: Math.round(Number(total) * 100), // convert to kobo
+        reference: order.id,
+        metadata: { orderId: order.id },
+        callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?reference=${order.id}`,
+      })
 
-    return NextResponse.json({ url: paymentUrl, orderId: order.id })
-  } catch (error) {
-    console.error("Order creation error:", error)
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 })
+      return NextResponse.json({ url: paymentUrl, orderId: order.id })
+    } catch (paystackError: any) {
+      console.error("Paystack Init Failed:", paystackError)
+      return NextResponse.json({ error: paystackError.message || "Payment initialization failed" }, { status: 500 })
+    }
+  } catch (error: any) {
+    console.error("Critical Order Creation Error:", error)
+    return NextResponse.json({ 
+      error: "Failed to create order",
+      details: error.message 
+    }, { status: 500 })
   }
 }
