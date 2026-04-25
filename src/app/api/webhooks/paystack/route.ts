@@ -4,6 +4,7 @@ import { sendTelegramMessage } from "@/lib/telegram"
 import { formatOrderMessage } from "@/lib/formatOrder"
 import crypto from "crypto"
 import { OrderStatus, PaymentStatus } from "@prisma/client" // Re-syncing types
+import { notifyUser } from "@/lib/notifications"
 
 export async function POST(req: Request) {
   try {
@@ -74,15 +75,8 @@ export async function POST(req: Request) {
           }).catch(err => console.error("Failed to increment discount usage:", err))
         }
 
-        // 4. Send Telegram Notification
-        // We use the webhook as the single source of truth for notifications
-        try {
-          const message = formatOrderMessage(order)
-          await sendTelegramMessage(message)
-          console.log(`Order ${order.orderNumber} successfully paid and notified via Telegram.`)
-        } catch (notifyError) {
-          console.error("Telegram notification failed but order was marked as paid:", notifyError)
-        }
+        // 4. Notify User & Admin
+        await notifyUser(orderId)
       }
     }
 

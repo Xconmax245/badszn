@@ -292,6 +292,7 @@ model Order {
   shippingMethod    String?           @map("shipping_method")
   trackingNumber    String?           @map("tracking_number")
   trackingUrl       String?           @map("tracking_url")
+  carrier           String?           @map("carrier") // ✅ NEW
   estimatedDelivery DateTime?         @map("estimated_delivery")
   paidAt            DateTime?         @map("paid_at")
   deliveredAt       DateTime?         @map("delivered_at")
@@ -314,6 +315,7 @@ model Order {
 enum OrderStatus {
   PENDING
   PAID
+  PROCESSING // ✅ NEW
   CONFIRMED
   PACKED
   SHIPPED
