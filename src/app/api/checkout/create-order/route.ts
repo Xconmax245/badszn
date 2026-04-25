@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { items, subtotal, total, shippingAddress } = await req.json()
+    const { items, subtotal, total, shippingAddress, discountCodeId, discountAmount } = await req.json()
     const orderNumber = `BS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
     const customer = await prisma.customer.findUnique({
@@ -22,6 +22,9 @@ export async function POST(req: Request) {
         customerId: customer?.id,
         guestEmail: user.email,
         subtotal,
+        discountAmount: discountAmount || 0,
+        discountCodeId: discountCodeId || null,
+        shippingCost: shippingAddress?.shippingCost || 0,
         total,
         status: "PENDING",
         paymentStatus: "UNPAID",
@@ -47,6 +50,7 @@ export async function POST(req: Request) {
       email: user.email!,
       amount: Math.round(total * 100), // convert to kobo
       reference: order.id,
+      metadata: { orderId: order.id }, // Add metadata for webhook
       callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?ref=${order.id}`,
     })
 

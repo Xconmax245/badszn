@@ -6,7 +6,8 @@ import crypto from "crypto"
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const bodyText = await req.text()
+    const body = JSON.parse(bodyText)
     const signature = req.headers.get("x-paystack-signature")
 
     // 1. Verify signature (Security)
@@ -18,10 +19,11 @@ export async function POST(req: Request) {
 
     const hash = crypto
       .createHmac("sha512", secret)
-      .update(JSON.stringify(body))
+      .update(bodyText)
       .digest("hex")
 
     if (hash !== signature) {
+      console.warn("Invalid Paystack signature")
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
 
@@ -29,15 +31,15 @@ export async function POST(req: Request) {
     const event = body
 
     if (event.event === "charge.success") {
-      const reference = event.data.reference
+      const orderId = event.data.metadata?.orderId || event.data.reference
 
-      // Find the order by ID or orderNumber (depending on what was sent to Paystack)
-      // Usually, we send the order ID as reference
+      // Use a transaction to ensure atomic update and handle potential race conditions
       const order = await prisma.order.update({
-        where: { id: reference },
+        where: { id: orderId },
         data: { 
           paymentStatus: "PAID",
-          status: "CONFIRMED",
+          status: "PAID", // Added to enum as requested
+          paidAt: new Date(),
           paystackData: event.data,
         },
         include: {
@@ -52,11 +54,23 @@ export async function POST(req: Request) {
       })
 
       if (order) {
-        // 3. Send Telegram Notification
-        const message = formatOrderMessage(order)
-        await sendTelegramMessage(message)
-        
-        console.log(`Order ${order.orderNumber} successfully paid and notified via Telegram.`)
+        // 3. Increment Discount Code usage if applicable
+        if (order.discountCodeId) {
+          await prisma.discountCode.update({
+            where: { id: order.discountCodeId },
+            data: { timesUsed: { increment: 1 } }
+          }).catch(err => console.error("Failed to increment discount usage:", err))
+        }
+
+        // 4. Send Telegram Notification
+        // We use the webhook as the single source of truth for notifications
+        try {
+          const message = formatOrderMessage(order)
+          await sendTelegramMessage(message)
+          console.log(`Order ${order.orderNumber} successfully paid and notified via Telegram.`)
+        } catch (notifyError) {
+          console.error("Telegram notification failed but order was marked as paid:", notifyError)
+        }
       }
     }
 

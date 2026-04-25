@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { useCartStore } from "@/stores/cartStore"
+import { Tag, Loader2, Check, X } from "lucide-react"
 
 interface CheckoutFormProps {
   form: any
@@ -20,6 +22,105 @@ const Input = ({ name, placeholder, value, onChange, type = "text" }: { name: st
     />
   </div>
 )
+
+const CouponInput = () => {
+  const [code, setCode] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const { applyCoupon, removeCoupon, coupon, subtotal } = useCartStore()
+
+  const handleApply = async () => {
+    if (!code) return
+    setLoading(true)
+    setError("")
+
+    try {
+      const res = await fetch("/api/checkout/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal: subtotal() }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || "Invalid code")
+        return
+      }
+
+      applyCoupon({
+        id: data.id,
+        code: data.code,
+        type: data.type,
+        value: data.value,
+        discountAmount: data.discountAmount,
+        isValid: true,
+      })
+      setCode("")
+    } catch (err) {
+      setError("System error. Try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (coupon?.isValid) {
+    return (
+      <div className="flex items-center justify-between p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+            <Tag size={14} />
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-white uppercase tracking-wider">{coupon.code}</p>
+            <p className="text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Active Discount Applied</p>
+          </div>
+        </div>
+        <button 
+          onClick={removeCoupon}
+          className="w-8 h-8 flex items-center justify-center text-white/20 hover:text-white transition-colors"
+        >
+          <X size={14} />
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="Enter Code"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-white/20 focus:border-white/40 focus:bg-white/[0.05] transition-all outline-none"
+          />
+        </div>
+        <button
+          onClick={handleApply}
+          disabled={loading || !code}
+          className="px-8 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-white/90 transition-all disabled:opacity-20 active:scale-95"
+        >
+          {loading ? <Loader2 size={14} className="animate-spin" /> : "Apply"}
+        </button>
+      </div>
+      <AnimatePresence>
+        {error && (
+          <motion.p 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="text-[9px] font-bold text-red-500 uppercase tracking-widest ml-4"
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
   const [savedAddresses, setSavedAddresses]   = useState<any[]>([])
@@ -156,13 +257,21 @@ export default function CheckoutForm({ form, setForm }: CheckoutFormProps) {
             <p className="text-[11px] font-black text-white uppercase tracking-wider">Standard Shipping</p>
             <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest">3-5 Business Days</p>
           </div>
-          <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Free</span>
+          <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Calculated at Summary</span>
         </div>
       </section>
 
       <section className="space-y-8">
         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
           <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">04</span>
+          Discount Code
+        </h3>
+        <CouponInput />
+      </section>
+
+      <section className="space-y-8">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 px-1 flex items-center gap-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-[11px]">05</span>
           Payment Information
         </h3>
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">

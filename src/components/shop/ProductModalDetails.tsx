@@ -51,6 +51,7 @@ export function ProductModalDetails({ product, settings, onClose }: Props) {
         variant: selectedVar,
         price: Number(product.basePrice),
         quantity,
+        shippingCost: Number(product.shippingCost || 0),
       })
 
       // Sync to DB for logged-in users
@@ -80,6 +81,7 @@ export function ProductModalDetails({ product, settings, onClose }: Props) {
       variant: selectedVar,
       price: Number(product.basePrice),
       quantity,
+      shippingCost: Number(product.shippingCost || 0),
     })
     window.location.href = '/checkout'
   }

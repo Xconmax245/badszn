@@ -12,9 +12,11 @@ export interface CartItem {
   size:       string
   color?:     string | null
   quantity:   number
+  shippingCost: number // ✅ NEW
 }
 
 export interface CouponState {
+  id:             string
   code:           string
   type:           'PERCENTAGE' | 'FLAT' | 'FREE_SHIPPING' | null
   value:          number
@@ -35,10 +37,11 @@ interface CartStore {
 
   // Items
   addItem:    (payload: {
-    product:  { id: string; name: string; slug: string; images: { url: string }[] }
+    product:  { id: string; name: string; slug: string; images: { url: string }[]; shippingCost: number }
     variant:  { id: string; size: string; color?: string | null; stock: number }
     price:    number
     quantity: number
+    shippingCost: number // ✅ NEW
   }) => void
   removeItem: (variantId: string) => void
   updateQty:  (variantId: string, quantity: number) => void
@@ -67,7 +70,7 @@ export const useCartStore = create<CartStore>()(
       closeCart:  () => set({ isOpen: false }),
       toggleCart: () => set((s) => ({ isOpen: !s.isOpen })),
 
-      addItem: ({ product, variant, price, quantity }) => {
+      addItem: ({ product, variant, price, quantity, shippingCost }) => {
         set(state => {
           const existing = state.items.find(i => i.variantId === variant.id)
           if (existing) {
@@ -93,6 +96,7 @@ export const useCartStore = create<CartStore>()(
                 size:      variant.size,
                 color:     variant.color ?? null,
                 quantity,
+                shippingCost: shippingCost ?? 0, // ✅ NEW
               },
             ],
           }
@@ -130,9 +134,11 @@ export const useCartStore = create<CartStore>()(
       },
 
       shipping: () => {
-        const { coupon } = get()
+        const { coupon, items } = get()
         if (coupon?.isValid && coupon.type === 'FREE_SHIPPING') return 0
-        return 3000 // Standard Shipping Rate
+        
+        // Sum of all individual item shipping costs
+        return items.reduce((sum, i) => sum + (i.shippingCost || 0) * i.quantity, 0)
       },
 
       total: () => {

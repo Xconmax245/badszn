@@ -171,6 +171,7 @@ model Product {
   modelHeight      String?             @map("model_height")
   modelSize        String?             @map("model_size")
   details          Json?               @map("details")
+  shippingCost     Decimal             @default(0) @map("shipping_cost") @db.Decimal(12, 2)
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
 
@@ -292,6 +293,7 @@ model Order {
   trackingNumber    String?           @map("tracking_number")
   trackingUrl       String?           @map("tracking_url")
   estimatedDelivery DateTime?         @map("estimated_delivery")
+  paidAt            DateTime?         @map("paid_at")
   deliveredAt       DateTime?         @map("delivered_at")
   giftMessage       String?           @map("gift_message")
   notes             String?
@@ -311,6 +313,7 @@ model Order {
 
 enum OrderStatus {
   PENDING
+  PAID
   CONFIRMED
   PACKED
   SHIPPED

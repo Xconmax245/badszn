@@ -28,7 +28,8 @@ export async function PATCH(
       material,
       fit,
       careInstructions,
-      collectionId
+      collectionId,
+      shippingCost // ✅ NEW
     } = data;
 
     const updatedProduct = await prisma.product.update({
@@ -52,7 +53,8 @@ export async function PATCH(
         isBestSeller,
         material,
         fit,
-        careInstructions
+        careInstructions,
+        shippingCost: shippingCost || undefined
       },
       include: {
         images: true,

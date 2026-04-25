@@ -13,7 +13,7 @@ interface PaymentButtonProps {
 export default function PaymentButton({ form }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false)
   const [modal, setModal] = useState({ isOpen: false, message: "" })
-  const { items, subtotal } = useCartStore()
+  const { items, subtotal, total, discountAmount, coupon } = useCartStore()
   
   const handleCheckout = async () => {
     if (items.length === 0) return
@@ -29,7 +29,7 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
 
     setLoading(true)
     trackEvent('CHECKOUT', { 
-      amount: subtotal(), 
+      amount: total(), 
       itemCount: items.length,
       email: form.email 
     })
@@ -47,10 +47,13 @@ export default function PaymentButton({ form }: PaymentButtonProps) {
             size: item.size,
             price: item.price,
             quantity: item.quantity,
-            imageUrl: item.image
+            imageUrl: item.image,
+            shippingCost: item.shippingCost
           })),
           subtotal: subtotal(),
-          total: subtotal(),
+          total: total(),
+          discountAmount: discountAmount(),
+          discountCodeId: coupon?.id,
           shippingAddress: form,
         })
       })

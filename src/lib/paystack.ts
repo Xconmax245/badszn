@@ -5,11 +5,13 @@ export async function initializePayment({
   amount,
   reference,
   callback_url,
+  metadata,
 }: {
   email: string
   amount: number // in kobo
   reference: string
   callback_url: string
+  metadata?: any
 }) {
   if (!PAYSTACK_SECRET) {
     throw new Error("PAYSTACK_SECRET_KEY is not configured")
@@ -26,6 +28,7 @@ export async function initializePayment({
       amount,
       reference,
       callback_url,
+      metadata,
     }),
   })
 

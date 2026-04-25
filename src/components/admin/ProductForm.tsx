@@ -45,6 +45,7 @@ export default function ProductForm({ initialData, categories, collections }: Pr
     careInstructions: initialData?.careInstructions || "",
     metaTitle: initialData?.metaTitle || "",
     metaDescription: initialData?.metaDescription || "",
+    shippingCost: initialData?.shippingCost || "0", // ✅ NEW
   })
 
   const [images, setImages] = useState<any[]>(initialData?.images || [])
@@ -256,6 +257,19 @@ export default function ProductForm({ initialData, categories, collections }: Pr
                   value={formData.compareAtPrice}
                   onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value })}
                   className="bg-transparent text-white/30 focus:outline-none flex-1 font-black text-2xl tracking-tighter"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <div className="space-y-4 relative group">
+              <label className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-black italic">Shipping Cost (₦)</label>
+              <div className="flex items-center gap-3 border-b border-white/[0.08] py-4">
+                <span className="text-white font-black text-xl">₦</span>
+                <input 
+                  type="number"
+                  value={formData.shippingCost}
+                  onChange={(e) => setFormData({ ...formData, shippingCost: e.target.value })}
+                  className="bg-transparent text-white focus:outline-none flex-1 font-black text-2xl tracking-tighter"
                   placeholder="0.00"
                 />
               </div>

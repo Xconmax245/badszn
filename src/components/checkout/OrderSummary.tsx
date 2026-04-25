@@ -10,8 +10,9 @@ interface OrderSummaryProps {
 }
 
 export default function OrderSummary({ form }: OrderSummaryProps) {
-  const { items, subtotal, shipping, total } = useCartStore()
+  const { items, subtotal, shipping, discountAmount, total } = useCartStore()
   const totalAmount = subtotal()
+  const currentDiscount = discountAmount()
 
   return (
     <motion.div 
@@ -52,6 +53,12 @@ export default function OrderSummary({ form }: OrderSummaryProps) {
             {shipping() === 0 ? 'FREE' : `₦${shipping().toLocaleString()}`}
           </span>
         </div>
+        {currentDiscount > 0 && (
+          <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-emerald-500/80">
+            <span>Discount</span>
+            <span className="text-[10px] font-black">- ₦{currentDiscount.toLocaleString()}</span>
+          </div>
+        )}
         <div className="flex justify-between items-center pt-4 border-t border-white/5">
           <span className="text-[12px] font-black uppercase tracking-[0.2em] text-white">Total</span>
           <span className="text-xl font-black text-white text-aura-glow">₦{total().toLocaleString()}</span>

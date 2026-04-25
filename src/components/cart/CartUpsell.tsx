@@ -13,6 +13,7 @@ interface UpsellProduct {
   compareAtPrice: number | null
   images: { url: string }[]
   variants: { id: string; size: string; color?: string | null; stock: number }[]
+  shippingCost: number // ✅ NEW
 }
 
 export default function CartUpsell() {
@@ -98,7 +99,8 @@ export default function CartUpsell() {
                     id: product.id, 
                     name: product.name, 
                     slug: product.slug, 
-                    images: product.images 
+                    images: product.images,
+                    shippingCost: product.shippingCost // ✅ NEW
                   },
                   variant: { 
                     id: firstInStockVariant.id, 
@@ -107,7 +109,8 @@ export default function CartUpsell() {
                     stock: firstInStockVariant.stock 
                   },
                   price: price,
-                  quantity: 1
+                  quantity: 1,
+                  shippingCost: product.shippingCost // ✅ NEW
                 })}
                 className="px-4 py-2 rounded-full border border-white/10 text-[10px] font-black tracking-widest uppercase hover:bg-white hover:text-black hover:border-white transition-all active:scale-[0.95]"
               >

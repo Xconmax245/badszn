@@ -21,6 +21,7 @@ export async function POST(request: Request) {
       fit,
       careInstructions,
       collectionId,
+      shippingCost, // ✅ NEW
       images, // [{ url, altText, isPrimary, sortOrder }]
       variants // [{ size, color, sku, stock, price }]
     } = data;
@@ -67,6 +68,7 @@ export async function POST(request: Request) {
         material,
         fit,
         careInstructions,
+        shippingCost: shippingCost || 0,
         ...(collectionId ? {
           collections: {
             create: [{ collectionId }]

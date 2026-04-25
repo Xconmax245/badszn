@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useCartStore } from "@/stores/cartStore"
 
 interface AddToCartButtonProps {
-  product: { id: string; name: string; slug: string; images: { url: string }[] }
+  product: { id: string; name: string; slug: string; images: { url: string }[]; shippingCost: number }
   selectedVariant: {
     id:       string
     size:     string
@@ -33,6 +33,7 @@ export default function AddToCartButton({
       variant: selectedVariant,
       price: selectedVariant.price,
       quantity: 1,
+      shippingCost: product.shippingCost,
     })
 
     // Sync to DB for logged-in users

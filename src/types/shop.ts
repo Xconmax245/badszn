@@ -20,6 +20,7 @@ export interface Product {
   slug:           string
   basePrice:      number
   compareAtPrice: number | null
+  shippingCost:   number
   description:    string | null
   images:         ProductImage[]
   variants:       ProductVariant[]
