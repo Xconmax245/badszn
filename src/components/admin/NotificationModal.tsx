@@ -30,10 +30,10 @@ export function NotificationModal({ isOpen, onClose, title, message, type }: Not
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="w-full max-w-md bg-black border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden shadow-2xl shadow-white/5"
+            className="w-full max-w-lg bg-black border border-white/10 rounded-[3rem] p-12 relative overflow-hidden shadow-2xl shadow-white/5"
           >
             {/* Background Glow */}
-            <div className={`absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[100px] opacity-20 ${
+            <div className={`absolute -top-32 -right-32 w-80 h-80 rounded-full blur-[120px] opacity-20 ${
               type === "success" ? "bg-emerald-500" : 
               type === "warning" ? "bg-amber-500" :
               "bg-red-500"
@@ -41,21 +41,21 @@ export function NotificationModal({ isOpen, onClose, title, message, type }: Not
 
             <button 
               onClick={onClose}
-              className="absolute top-8 right-8 text-white/20 hover:text-white transition-colors z-10"
+              className="absolute top-10 right-10 text-white/20 hover:text-white transition-colors z-10"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </button>
 
             <div className="flex flex-col items-center text-center relative z-10">
-              <div className={`w-20 h-20 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center mb-8 ${colorClass} shadow-2xl`}>
-                <Icon className="w-10 h-10" />
+              <div className={`w-24 h-24 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center mb-10 ${colorClass} shadow-2xl`}>
+                <Icon className="w-12 h-12" />
               </div>
 
-              <h2 className="text-2xl font-black uppercase tracking-[0.2em] text-white mb-4 leading-tight">
+              <h2 className="text-3xl font-black uppercase tracking-[0.2em] text-white mb-6 leading-none">
                 {title}
               </h2>
               
-              <p className="text-[14px] text-white/50 font-medium leading-relaxed tracking-tight max-w-[280px]">
+              <p className="text-[15px] text-white/40 font-medium leading-relaxed tracking-tight max-w-sm mx-auto">
                 {message}
               </p>
 
