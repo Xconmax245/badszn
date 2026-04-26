@@ -19,7 +19,7 @@ import DropStatusPanel from "@/components/admin/DropStatusPanel"
 import { GrowthBadge } from "@/components/admin/GrowthBadge"
 import { LastUpdated } from "@/components/admin/LastUpdated"
 import { formatNaira } from "@/lib/utils/formatCurrency"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 interface DashboardData {
   revenue: { total: number; today: number; growth: number }
