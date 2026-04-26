@@ -14,6 +14,7 @@ import Image from "next/image"
 import { formatNaira } from "@/lib/utils/formatCurrency"
 import { AdminSearch } from "@/components/admin/AdminSearch"
 import { AdminFilter } from "@/components/admin/AdminFilter"
+import { DeleteProductButton } from "@/components/admin/DeleteProductButton"
 
 export default async function AdminProductsPage({ 
   searchParams 
@@ -185,6 +186,7 @@ export default async function AdminProductsPage({
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
+                          <DeleteProductButton productId={product.id} />
                         </div>
                       </td>
                     </tr>

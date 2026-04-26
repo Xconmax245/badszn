@@ -21,9 +21,14 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const now      = new Date()
-  const last24h  = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-  const prev24h  = new Date(now.getTime() - 48 * 60 * 60 * 1000)
+  const now       = new Date()
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000)
+  const last24h   = new Date(now.getTime() - 24 * 60 * 60 * 1000) // Keep rolling for growth context if needed, but let's use calendar for consistency
+  
+  // Use calendar days for stats
+  const startOfToday = todayStart
+  const startOfYesterday = yesterdayStart
 
   // 1. Revenue (Sequential)
   const totalRevenue = await safeQuery(() => prisma.order.aggregate({
@@ -33,20 +38,20 @@ export async function GET(req: Request) {
 
   const revenueToday = await safeQuery(() => prisma.order.aggregate({
     _sum: { total: true },
-    where: { paymentStatus: "PAID", createdAt: { gte: last24h } },
+    where: { paymentStatus: "PAID", createdAt: { gte: startOfToday } },
   }), { _sum: { total: null } })
 
   const revenueYesterday = await safeQuery(() => prisma.order.aggregate({
     _sum: { total: true },
-    where: { paymentStatus: "PAID", createdAt: { gte: prev24h, lt: last24h } },
+    where: { paymentStatus: "PAID", createdAt: { gte: startOfYesterday, lt: startOfToday } },
   }), { _sum: { total: null } })
 
   // 2. Orders - Collapsed into 1 Raw SQL query (Sequential)
   const orderCountsResult = await safeQuery(() => prisma.$queryRaw<any[]>`
     SELECT 
       COUNT(*)::int AS total,
-      COUNT(*) FILTER (WHERE created_at >= ${last24h})::int AS today,
-      COUNT(*) FILTER (WHERE created_at >= ${prev24h} AND created_at < ${last24h})::int AS yesterday,
+      COUNT(*) FILTER (WHERE created_at >= ${startOfToday})::int AS today,
+      COUNT(*) FILTER (WHERE created_at >= ${startOfYesterday} AND created_at < ${startOfToday})::int AS yesterday,
       COUNT(*) FILTER (WHERE fulfillment_status = 'UNFULFILLED' AND payment_status = 'PAID')::int AS pending
     FROM orders
   `, [{ total: 0, today: 0, yesterday: 0, pending: 0 }])
@@ -56,7 +61,7 @@ export async function GET(req: Request) {
   const customerCountsResult = await safeQuery(() => prisma.$queryRaw<any[]>`
     SELECT 
       COUNT(*)::int AS total,
-      COUNT(*) FILTER (WHERE created_at >= ${last24h})::int AS "newToday",
+      COUNT(*) FILTER (WHERE created_at >= ${startOfToday})::int AS "newToday",
       COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = customers.id))::int AS repeat
     FROM customers
   `, [{ total: 0, newToday: 0, repeat: 0 }])
@@ -66,7 +71,7 @@ export async function GET(req: Request) {
   const visitorCountsResult = await safeQuery(() => prisma.$queryRaw<any[]>`
     SELECT 
       COUNT(*)::int AS total,
-      COUNT(*) FILTER (WHERE first_seen_at >= ${last24h})::int AS today,
+      COUNT(*) FILTER (WHERE first_seen_at >= ${startOfToday})::int AS today,
       COUNT(*) FILTER (WHERE visit_count > 1)::int AS returning
     FROM visitor_sessions
   `, [{ total: 0, today: 0, returning: 0 }])

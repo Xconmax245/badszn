@@ -93,27 +93,27 @@ function MetricCardSkeleton() {
   )
 }
 
-function deriveMetrics(data: DashboardData | null): MetricCardProps[] {
+function deriveMetrics(data: DashboardData | null, timeRange: 'today' | 'all'): MetricCardProps[] {
   return [
     {
-      label:  "Revenue Today",
-      value:  data ? formatNaira(data.revenue.today) : "—",
-      growth: data?.revenue.growth ?? null,
-      sub:    data ? `${formatNaira(data.revenue.total)} total` : "System standby",
+      label:  timeRange === 'today' ? "Revenue Today" : "Total Revenue",
+      value:  data ? formatNaira(timeRange === 'today' ? data.revenue.today : data.revenue.total) : "—",
+      growth: timeRange === 'today' ? (data?.revenue.growth ?? null) : null,
+      sub:    data ? (timeRange === 'today' ? `${formatNaira(data.revenue.total)} total` : "Across all history") : "System standby",
       delay:  0
     },
     {
-      label:  "Orders Today",
-      value:  data ? String(data.orders.today) : "—",
-      growth: data?.orders.growth ?? null,
-      sub:    data ? `${data.orders.pending} pending push` : "Registry waiting",
+      label:  timeRange === 'today' ? "Orders Today" : "Total Orders",
+      value:  data ? String(timeRange === 'today' ? data.orders.today : data.orders.total) : "—",
+      growth: timeRange === 'today' ? (data?.orders.growth ?? null) : null,
+      sub:    data ? (timeRange === 'today' ? `${data.orders.pending} pending push` : `${data.orders.today} today`) : "Registry waiting",
       delay:  100
     },
     {
       label:  "Customers",
       value:  data ? String(data.customers.total) : "—",
       growth: null,
-      sub:    data ? `${data.customers.newToday} new · ${data.customers.retention}% sync` : "Audience offline",
+      sub:    data ? `${data.customers.newToday} new today · ${data.customers.retention}% sync` : "Audience offline",
       delay:  200
     },
     {
@@ -125,10 +125,10 @@ function deriveMetrics(data: DashboardData | null): MetricCardProps[] {
       delay:  300
     },
     {
-      label:  "Total Visits",
-      value:  data ? String(data.visitors.total) : "—",
+      label:  timeRange === 'today' ? "Visits Today" : "Total Visits",
+      value:  data ? String(timeRange === 'today' ? data.visitors.today : data.visitors.total) : "—",
       growth: null,
-      sub:    data ? `${data.visitors.today} today · ${data.visitors.returning} returning` : "Traffic offline",
+      sub:    data ? `${data.visitors.returning} returning` : "Traffic offline",
       delay:  400
     },
     {
@@ -142,6 +142,7 @@ function deriveMetrics(data: DashboardData | null): MetricCardProps[] {
 }
 
 export default function AdminDashboard() {
+  const [timeRange, setTimeRange] = useState<'today' | 'all'>('today')
   const { data: statsData, error: statsError, isLoading: statsLoading, isValidating: statsValidating } = useSWR<DashboardData>("/api/admin/dashboard", fetcher, {
     refreshInterval: 30000,
     revalidateOnFocus: true,
@@ -155,7 +156,7 @@ export default function AdminDashboard() {
     }
   }, [statsError])
 
-  const metrics = deriveMetrics(statsData ?? null)
+  const metrics = deriveMetrics(statsData ?? null, timeRange)
 
   return (
     <div className="space-y-16">
@@ -166,11 +167,30 @@ export default function AdminDashboard() {
         transition={{ duration: 0.6 }}
         className="flex items-center justify-between"
       >
-        <div className="flex items-center gap-4">
-          <ShieldCheck className={`w-5 h-5 ${statsError ? "text-red-500" : "text-emerald-500"}`} />
-          <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50">
-            {statsError ? "Registry_Status: SYNC_LATENCY" : "Registry_Status: NOMINAL"}
-          </h2>
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4">
+            <ShieldCheck className={`w-5 h-5 ${statsError ? "text-red-500" : "text-emerald-500"}`} />
+            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50">
+              {statsError ? "Registry_Status: SYNC_LATENCY" : "Registry_Status: NOMINAL"}
+            </h2>
+          </div>
+
+          <div className="flex bg-white/[0.03] border border-white/5 p-1 rounded-full">
+            <button 
+              onClick={() => setTimeRange('today')}
+              className={`px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase transition-all ${timeRange === 'today' ? 'bg-white text-black' : 'text-white/30 hover:text-white/60'}`}
+              data-magnetic
+            >
+              Today
+            </button>
+            <button 
+              onClick={() => setTimeRange('all')}
+              className={`px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase transition-all ${timeRange === 'all' ? 'bg-white text-black' : 'text-white/30 hover:text-white/60'}`}
+              data-magnetic
+            >
+              All Time
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-6">
            {statsData && <LastUpdated timestamp={new Date(statsData.fetchedAt)} />}
