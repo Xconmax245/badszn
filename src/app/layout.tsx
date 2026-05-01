@@ -16,6 +16,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "BAD SZN — Built different. Worn louder.",
   description: "BAD SZN — Built different. Worn louder. Drop-ready. Minimal.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 import CustomCursor from "@/components/shared/CustomCursor";
